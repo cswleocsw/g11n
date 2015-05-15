@@ -1,0 +1,7 @@
+.idea
+node_modules
+src
+dist
+build
+gulpfile.js
+webpack.config.js
