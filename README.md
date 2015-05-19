@@ -5,7 +5,6 @@ The g11n library was designed to allow user integrate difference language file i
 Not recommended for use in the development of new products
 
 ## To do list
-* dynamic load json file by ajax
 * cache loaded content by web storage
 
 ## Usage
