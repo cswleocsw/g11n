@@ -1,13 +1,15 @@
 {
   "name": "g11n",
   "version": "0.0.1",
-  "main": "dist/g11n.js",
+  "main": "dist/g11n.min.js",
   "ignore": [
     "**/.*",
     "build",
     "test",
+    "node_modules",
     "*.md",
     "gulpfile.js",
+    "webpack.config.js",
     "package.json"
   ]
 }
