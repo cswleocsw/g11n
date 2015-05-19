@@ -2,6 +2,9 @@
   "name": "g11n",
   "version": "0.0.1",
   "main": "dist/g11n.js",
+  "scripts": {
+    "deploy": "NODE_ENV=production webpack -p"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/cswlocsw/g11n.git"
