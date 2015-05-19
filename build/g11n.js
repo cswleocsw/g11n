@@ -56,27 +56,33 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
+	// functions
 	var _ = __webpack_require__(1);
 
-	var config = {
+	// default setting
+	var defaults = {
 	    namespace: 'translation',
 	    placeholder: /\{%([^%]+)%\}/g
 	};
 
+	var attrs = _.keys(defaults);
+
 	var G11N = function (options) {
 	    options || (options = {});
-	    this.langs = { translation: {} };
-	    this.config = _.assign(config, options);
+	    var settings = null;
+	    settings = _.assign(defaults, _.pick(options, attrs));
+	    this.getConfig = function () {
+	        return settings;
+	    };
+	    this.langs = {translation: {}};
 	};
 
 	G11N.prototype = {
 	    t: function (str, obj, namespace) {
-	        var data, item, key;
+	        var  data, item, key;
 	        obj || (obj = {});
-	        namespace || (namespace = config.namespace);
-	        if (_.isString(obj)) {
-	            namespace = obj
-	        }
+	        namespace || (namespace = this.namespace());
+	        _.isString(obj) && (namespace = obj);
 	        data = this.langs[namespace] || {};
 	        item = _.get(data, str, str);
 	        if (_.isObject(obj) && _.isString(item)) {
@@ -90,18 +96,42 @@ return /******/ (function(modules) { // webpackBootstrap
 	    },
 
 	    render: function (str, namespace) {
-	        var data;
-	        namespace || (namespace = this.config.namespace);
-	        data = this.langs[namespace] || {};
+	        namespace || (namespace = this.namespace());
+	        var data = this.langs[namespace] || {};
 	        return ('' + str).replace(/\{%([^%]+)%\}/g, function (m, $1) {
 	            return _.get(data, $1, $1);
 	        });
 	    },
 
 	    bind: function (obj, namespace) {
-	        namespace || (namespace = config.namespace);
-	        obj && (this.langs[namespace] = obj);
+	        namespace || (namespace = this.namespace());
+	        obj && (this.langs[namespace] = _.assign(this.langs[namespace] || {}, obj));
 	        return this;
+	    },
+
+	    imports: function (obj, namespace) {
+	        namespace || (namespace = this.namespace());
+	        var  g11n = this, regex = /^(.)+\.json$/;
+	        var lists = _.isArray(obj) ? obj : [obj]
+	        for (var i = 0, L = lists.length; i < L; ++i) {
+	            var url = lists[i];
+	            if (url) {
+	                ! regex.test(url) && (url += '.json');
+	                _.ajax(url, {
+	                    success: function (json) {
+	                        g11n.bind(json, namespace)
+	                    }});
+	            }
+	        }
+	        return this;
+	    },
+
+	    namespace: function () {
+	        return _.get(this.getConfig(), 'namespace');
+	    },
+
+	    dump: function () {
+	        return this.langs;
 	    }
 	};
 
@@ -164,7 +194,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (_.has(obj, key)) return obj[key];
 
 	    _.each(key.split('.'), function (segment) {
-	        if (! _.isObject(obj) || ! _.has(obj, segment)) {
+	        if (!_.isObject(obj) || !_.has(obj, segment)) {
 	            obj = def;
 	            return false;
 	        }
@@ -174,15 +204,43 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return obj;
 	};
 
-	_.keys = Object.keys || function keys(obj) {
-	    var attr;
-	    if (! _.isObject(obj)) return [];
-	    var keys = [];
+	_.keys = Object.keys || function (obj) {
+	        var attr;
+	        if (!_.isObject(obj)) return [];
+	        var keys = [];
+	        for (attr in obj) {
+	            if (obj.hasOwnProperty(attr))
+	                keys.push(attr);
+	        }
+	        return keys;
+	    };
+
+	_.values = function (obj) {
+	    var attr, values = [];
+	    ;
+	    if (!_.isObject(obj)) return values;
 	    for (attr in obj) {
 	        if (obj.hasOwnProperty(attr))
-	            keys.push(attr);
+	            values.push(obj[attr]);
 	    }
-	    return keys;
+	    return values;
+	};
+
+	_.extend = function (child, parent, deep) {
+	    var attr;
+	    deep || (deep = false);
+	    child || (child = {});
+	    for (attr in parent) {
+	        if (_.has(parent, attr)) {
+	            if (deep && _.isObject(parent[attr])) {
+	                child[attr] = (_.isArray(parent[attr])) ? [] : {};
+	                _.extend(child[attr], parent[attr]);
+	            } else {
+	                child[attr] = parent[attr];
+	            }
+	        }
+	    }
+	    return child;
 	};
 
 	_.assign = function (obj) {
@@ -191,11 +249,43 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (length < 2 || obj == null) return obj;
 	    for (index = 1; index < length; index++) {
 	        source = arguments[index];
-	        _.each(_.keys(source), function (key) {
-	            obj[key] = source[key];
-	        });
+	        obj = _.extend(obj, source);
 	    }
 	    return obj;
+	};
+
+	_.pick = function (obj, items) {
+	    var result = {}, keys, key, value;
+	    if (_.isNull(obj)) return result;
+	    keys = _.values(items);
+	    for (var i = 0, L = keys.length; i < L; i++) {
+	        key = keys[i];
+	        value = obj[key];
+	        if (_.has(obj, key)) result[key] = value;
+	    }
+	    return result;
+	};
+
+	_.ajax = function (url , callbacks) {
+	    if (url) {
+	        var xhr = new XMLHttpRequest();
+	        var handle = function () {
+	            if (xhr.readyState !== 4) return;
+	            if (xhr.status === 200) {
+	                _.isFunction(callbacks.success) && callbacks.success(JSON.parse(xhr.responseText));
+	            } else {
+	                _.isFunction(callbacks.error) && callbacks.error(xhr);
+	            }
+	        };
+
+	        if (xhr) {
+	            xhr.onreadystatechange = handle;
+	            xhr.open('GET', url, false);
+	            xhr.send();
+	        } else {
+	            throw 'XMLHttpRequest not supported.'
+	        }
+	    }
 	};
 
 	module.exports = _;

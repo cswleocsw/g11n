@@ -1,26 +1,32 @@
 'use strict';
 
+// functions
 var _ = require('./tools');
 
-var config = {
+// default setting
+var defaults = {
     namespace: 'translation',
     placeholder: /\{%([^%]+)%\}/g
 };
 
+var attrs = _.keys(defaults);
+
 var G11N = function (options) {
     options || (options = {});
-    this.langs = { translation: {} };
-    this.config = _.assign(config, options);
+    var settings = null;
+    settings = _.assign(defaults, _.pick(options, attrs));
+    this.getConfig = function () {
+        return settings;
+    };
+    this.langs = {translation: {}};
 };
 
 G11N.prototype = {
     t: function (str, obj, namespace) {
-        var data, item, key;
+        var  data, item, key;
         obj || (obj = {});
-        namespace || (namespace = this.config.namespace);
-        if (_.isString(obj)) {
-            namespace = obj
-        }
+        namespace || (namespace = this.namespace());
+        _.isString(obj) && (namespace = obj);
         data = this.langs[namespace] || {};
         item = _.get(data, str, str);
         if (_.isObject(obj) && _.isString(item)) {
@@ -34,18 +40,42 @@ G11N.prototype = {
     },
 
     render: function (str, namespace) {
-        var data;
-        namespace || (namespace = this.config.namespace);
-        data = this.langs[namespace] || {};
+        namespace || (namespace = this.namespace());
+        var data = this.langs[namespace] || {};
         return ('' + str).replace(/\{%([^%]+)%\}/g, function (m, $1) {
             return _.get(data, $1, $1);
         });
     },
 
     bind: function (obj, namespace) {
-        namespace || (namespace = this.config.namespace);
-        obj && (this.langs[namespace] = obj);
+        namespace || (namespace = this.namespace());
+        obj && (this.langs[namespace] = _.assign(this.langs[namespace] || {}, obj));
         return this;
+    },
+
+    imports: function (obj, namespace) {
+        namespace || (namespace = this.namespace());
+        var  g11n = this, regex = /^(.)+\.json$/;
+        var lists = _.isArray(obj) ? obj : [obj]
+        for (var i = 0, L = lists.length; i < L; ++i) {
+            var url = lists[i];
+            if (url) {
+                ! regex.test(url) && (url += '.json');
+                _.ajax(url, {
+                    success: function (json) {
+                        g11n.bind(json, namespace)
+                    }});
+            }
+        }
+        return this;
+    },
+
+    namespace: function () {
+        return _.get(this.getConfig(), 'namespace');
+    },
+
+    dump: function () {
+        return this.langs;
     }
 };
 
