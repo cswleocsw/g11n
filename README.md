@@ -4,10 +4,50 @@ The g11n library was designed to allow user integrate difference language file i
 # Notice
 Not recommended for use in the development of new products
 
-## To do list
+## Todos
 * cache loaded content by web storage
 
-## Usage
+# Usage
+```javascript
+var g11n = new G11N();
+
+var package = {
+    name: 'g11n',
+    version: '1.0.0',
+    descript: 'This package name is `:name` and version is `:version`'
+};
+
+// bind json object
+g11n.bind(package);
+g11n.t('name'); // return g11n
+
+// render
+var descript = 'This package name is {%name%} and version is {%version%}';
+g11n.render(descript); // return This package name is g11n and version is 1.0.0
+
+// string replace
+g11n.t('descript', { ':name': 'g11n', ':version': '1.0.0' }); // return This package name is `g11n` and version is `1.0.0`
+
+// import json file
+
+// if your website has json's resource files
+// http://domain/locates/en-us.json
+// {
+//   "hello": "hello(en-us)"
+// }
+
+g11n.imports('locates/en-us');
+g11n.t('hello'); // return hello(en-us)
+
+// assign import json content to another namespace
+g11n.imports('locates/zh-cn', 'zh-cn');
+g11n.t('hello'); // return hello(en-us)
+g11n.t('hello', 'zh-cn'); // return hello(zh-cn)
+
+// for test
+g11n.dump(); // return all json content
+
+```
 
 ## Support
 If you have any problem or suggestion please open an issue [here](https://github.com/cswleocsw/g11n/issues).
