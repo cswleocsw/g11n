@@ -10,6 +10,7 @@
     "*.md",
     "gulpfile.js",
     "webpack.config.js",
-    "package.json"
+    "package.json",
+    "karma.conf.js"
   ]
 }

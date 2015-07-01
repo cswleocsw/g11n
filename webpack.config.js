@@ -1,24 +1,27 @@
-var path, webpack, config;
+var webpack = require("webpack"),
+    path = require('path');
 
-path = require('path');
+module.exports = {
+    entry: path.join(__dirname, 'src/g11n'),
 
-webpack = require("webpack");
-
-config = {
-    entry: "./src/g11n",
     output: {
-        path: path.resolve(__dirname, process.env.NODE_ENV === 'production' ? './dist/' : './build'),
-        filename: process.env.NODE_ENV === 'production' ? 'g11n.min.js' : 'g11n.js',
+        path: path.join(__dirname, 'dist'),
+        filename: 'g11n.min.js',
         libraryTarget: 'umd',
         library: 'G11N'
     },
+
     plugins: [],
-    resolve: { alias: {} },
+
+    resolve: {
+        alias: {
+            'config': path.join(__dirname, 'src/config')
+        }
+    },
+
     module: {
         noParse: [],
         preLoaders: [],
         loaders: []
     }
 };
-
-module.exports = config;
