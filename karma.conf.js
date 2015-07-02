@@ -13,7 +13,8 @@ module.exports = function (config) {
 
             // list of files / patterns to load in the browser
             files: [
-                'test/**/*_test.js'
+                'test/**/*_test.js',
+                {pattern: 'test/mocks/*.json', watched: true, served: true, included: false}
             ],
 
             // list of files to exclude
@@ -46,26 +47,31 @@ module.exports = function (config) {
             // start these browsers
             // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
             // [PhantomJS, Chrome]
-            browsers: ['PhantomJS'],
+            browsers: ['Chrome'],
 
             // Continuous Integration mode
             // if true, Karma captures browsers, runs the tests and exits
-            singleRun: true,
+            singleRun: false,
 
             // optionally, configure the reporter
+            //{ type : 'text' }
+            //{ type : 'html', dir : 'coverage/' }
             coverageReporter: {
-                type: 'text'
+                type : 'html',
+                dir : 'coverage/'
             },
 
             webpack: {
                 // karma watches the test entry points
                 // (you don't need to specify the entry option)
                 // webpack watches dependencies
+                devtool: 'inline-source-map',
 
                 resolve: {
                     alias: {
                         'g11n': path.join(__dirname, 'src/g11n'),
-                        'config': path.join(__dirname, 'src/config')
+                        'config': path.join(__dirname, 'src/config'),
+                        'tools': path.join(__dirname, 'src/tools')
                     }
                 },
 

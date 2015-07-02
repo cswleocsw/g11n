@@ -1,34 +1,49 @@
-'use strict';
-
 // functions
-var _ = require('./tools');
+var _ = require('lodash'),
+    $ = require('jquery'),
+    config = require('config');
 
-// default setting
-var defaults = {
-    namespace: 'translation',
-    placeholder: /\{%([^%]+)%\}/g
-};
+var opts = ['namespace', 'placeholder'];
 
-var attrs = _.keys(defaults);
+function jsonSuffix(str) {
+    return /^(.)+\.json$/.test(str) ? str : (str + '.json');
+}
 
+/**
+ * G11N 建構式
+ *
+ * @param options
+ * @constructor
+ */
 var G11N = function (options) {
     options || (options = {});
-    var settings = null;
-    settings = _.assign(defaults, _.pick(options, attrs));
-    this.getConfig = function () {
-        return settings;
-    };
-    this.langs = {translation: {}};
+    _.extend(this, config, _.pick(options, opts), {maps: {}});
 };
 
 G11N.prototype = {
+    /**
+     * 取出相對應的資料
+     *
+     * @param str
+     * @param obj
+     * @param namespace
+     * @returns {*}
+     */
     t: function (str, obj, namespace) {
-        var  data, item, key;
-        obj || (obj = {});
-        namespace || (namespace = this.namespace());
-        _.isString(obj) && (namespace = obj);
-        data = this.langs[namespace] || {};
+        obj = obj || {};
+
+        var ns = namespace || this.namespace;
+
+        if (_.isString(obj)) {
+            ns = obj;
+        }
+
+        var data = this.maps[ns] || {};
+
         item = _.get(data, str, str);
+
+
+        var item, key;
         if (_.isObject(obj) && _.isString(item)) {
             for (key in obj) {
                 if (obj.hasOwnProperty(key)) {
@@ -36,46 +51,76 @@ G11N.prototype = {
                 }
             }
         }
+
         return item
     },
 
+    /**
+     * 快速取代字串
+     *
+     * @param str
+     * @param namespace
+     * @returns {string}
+     */
     render: function (str, namespace) {
-        namespace || (namespace = this.namespace());
-        var data = this.langs[namespace] || {};
+        var ns = namespace || this.namespace;
+
+        var data = this.maps[ns] || {};
+
         return ('' + str).replace(/\{%([^%]+)%\}/g, function (m, $1) {
             return _.get(data, $1, $1);
         });
     },
 
+    /**
+     * 綁定語系資料
+     *
+     * @param obj
+     * @param namespace
+     * @returns {G11N}
+     */
     bind: function (obj, namespace) {
-        namespace || (namespace = this.namespace());
-        obj && (this.langs[namespace] = _.assign(this.langs[namespace] || {}, obj));
-        return this;
-    },
-
-    imports: function (obj, namespace) {
-        namespace || (namespace = this.namespace());
-        var  g11n = this, regex = /^(.)+\.json$/;
-        var lists = _.isArray(obj) ? obj : [obj]
-        for (var i = 0, L = lists.length; i < L; ++i) {
-            var url = lists[i];
-            if (url) {
-                ! regex.test(url) && (url += '.json');
-                _.ajax(url, {
-                    success: function (json) {
-                        g11n.bind(json, namespace)
-                    }});
-            }
+        if (obj) {
+            var ns = namespace || this.namespace;
+            this.maps[ns] = _.extend(this.maps[ns] || {}, obj);
         }
         return this;
     },
 
-    namespace: function () {
-        return _.get(this.getConfig(), 'namespace');
-    },
+    /**
+     * 載入語系 json 檔案
+     *
+     * @param obj
+     * @param namespace
+     * @returns {G11N}
+     */
+    imports: function (obj, namespace) {
+        var g11n = this,
+            ns = namespace || this.namespace;
 
-    dump: function () {
-        return this.langs;
+        var items = _.isArray(obj) ? obj : [obj];
+
+        _.each(items, function (url) {
+            url = jsonSuffix(url);
+
+            if (url) {
+                $.ajax({
+                    url: url,
+                    async: false
+                })
+
+                    .done(function (json) {
+                        g11n.bind(json, ns);
+                    })
+
+                    .fail(function (xhr) {
+                        throw new Error(xhr.statusText);
+                    });
+
+            }
+        });
+
+        return this;
     }
 };
 
