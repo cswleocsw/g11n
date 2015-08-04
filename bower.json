@@ -1,6 +1,6 @@
 {
   "name": "g11n",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "main": "dist/g11n.min.js",
   "ignore": [
     "**/.*",

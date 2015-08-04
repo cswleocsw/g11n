@@ -1,50 +1,25 @@
-// functions
-var _ = require('lodash'),
-    $ = require('jquery'),
-    config = require('config');
+import 'babel/polyfill';
+import assign from 'object-assign';
+import { isArray, isObject, isString, jsonSuffix, ajax, get } from './utils'
 
-var opts = ['namespace', 'placeholder'];
+export default class G11N {
+    constructor() {
+        this.namespace = 'translation';
+        this.placeholder = /\{%([^%]+)%\}/g;
+        this.maps = {};
+    }
 
-function jsonSuffix(str) {
-    return /^(.)+\.json$/.test(str) ? str : (str + '.json');
-}
+    t(str, obj = {}, ns = this.namespace) {
+        ns = isString(obj) ? obj : ns;
 
-/**
- * G11N 建構式
- *
- * @param options
- * @constructor
- */
-var G11N = function (options) {
-    options || (options = {});
-    _.extend(this, config, _.pick(options, opts), {maps: {}});
-};
+        const data = this.maps[ns] || {};
 
-G11N.prototype = {
-    /**
-     * 取出相對應的資料
-     *
-     * @param str
-     * @param obj
-     * @param namespace
-     * @returns {*}
-     */
-    t: function (str, obj, namespace) {
-        obj = obj || {};
+        let item = get(data, str, str);
 
-        var ns = namespace || this.namespace;
+        let key;
 
-        if (_.isString(obj)) {
-            ns = obj;
-        }
-
-        var data = this.maps[ns] || {};
-
-        item = _.get(data, str, str);
-
-
-        var item, key;
-        if (_.isObject(obj) && _.isString(item)) {
+        // 占位符處理
+        if (isObject(obj) && isString(item)) {
             for (key in obj) {
                 if (obj.hasOwnProperty(key)) {
                     item = item.replace(key, obj[key])
@@ -53,75 +28,44 @@ G11N.prototype = {
         }
 
         return item
-    },
+    }
 
-    /**
-     * 快速取代字串
-     *
-     * @param str
-     * @param namespace
-     * @returns {string}
-     */
-    render: function (str, namespace) {
-        var ns = namespace || this.namespace;
-
-        var data = this.maps[ns] || {};
-
-        return ('' + str).replace(/\{%([^%]+)%\}/g, function (m, $1) {
-            return _.get(data, $1, $1);
-        });
-    },
-
-    /**
-     * 綁定語系資料
-     *
-     * @param obj
-     * @param namespace
-     * @returns {G11N}
-     */
-    bind: function (obj, namespace) {
+    bind(obj, ns = this.namespace) {
         if (obj) {
-            var ns = namespace || this.namespace;
-            this.maps[ns] = _.extend(this.maps[ns] || {}, obj);
+            this.maps[ns] = assign(this.maps[ns] || {}, obj);
         }
         return this;
-    },
+    }
 
-    /**
-     * 載入語系 json 檔案
-     *
-     * @param obj
-     * @param namespace
-     * @returns {G11N}
-     */
-    imports: function (obj, namespace) {
-        var g11n = this,
-            ns = namespace || this.namespace;
+    imports(obj, ns = this.namespace) {
+        const g11n = this;
 
-        var items = _.isArray(obj) ? obj : [obj];
+        const items = isArray(obj) ? obj : [obj];
 
-        _.each(items, function (url) {
+        items.forEach((url) => {
             url = jsonSuffix(url);
 
             if (url) {
-                $.ajax({
-                    url: url,
-                    async: false
-                })
-
-                    .done(function (json) {
+                ajax(url, {
+                    success: (json) => {
                         g11n.bind(json, ns);
-                    })
+                    },
 
-                    .fail(function (xhr) {
+                    error: (xhr) => {
                         throw new Error(xhr.statusText);
-                    });
-
+                    }
+                });
             }
         });
 
         return this;
     }
-};
 
-module.exports = G11N;
+    render(str, ns = this.namespace) {
+        const g11n = this;
+        const data = this.maps[ns] || {};
+        return ('' + str).replace(g11n.placeholder, function (m, $1) {
+            return get(data, $1, $1);
+        });
+    }
+}
