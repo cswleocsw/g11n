@@ -44,8 +44,6 @@ g11n.imports('locates/zh-cn', 'zh-cn');
 g11n.t('hello'); // return hello(en-us)
 g11n.t('hello', 'zh-cn'); // return hello(zh-cn)
 
-// for test
-g11n.dump(); // return all json content
 
 ```
 
