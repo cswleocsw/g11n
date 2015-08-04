@@ -33,9 +33,9 @@ module.exports = function (config) {
         autoWatch: true,
 
         // PhantomJS || Chrome
-        browsers: ['PhantomJS', 'Chrome'],
+        browsers: ['PhantomJS'],
 
-        singleRun: false,
+        singleRun: true,
 
         // webpack configuration
         webpack: {

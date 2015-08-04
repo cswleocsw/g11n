@@ -3,7 +3,7 @@
   "version": "1.2.0",
   "main": "dist/g11n.min.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha start",
+    "test": "./node_modules/.bin/karma start --single-run --browsers PhantomJS",
     "build": "webpack",
     "product": "NODE_ENV=production webpack -p"
   },
