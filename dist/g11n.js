@@ -79,6 +79,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.namespace = 'translation';
 	        this.placeholder = /\{%([^%]+)%\}/g;
 	        this.maps = {};
+	        this._imports = {};
 	    }
 
 	    _createClass(G11N, [{
@@ -119,6 +120,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'imports',
 	        value: function imports(obj) {
+	            var _this = this;
+
 	            var ns = arguments.length <= 1 || arguments[1] === undefined ? this.namespace : arguments[1];
 
 	            var g11n = this;
@@ -128,7 +131,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            items.forEach(function (url) {
 	                url = _utils.jsonSuffix(url);
 
-	                if (url) {
+	                if (url && !_this._imports[url]) {
 	                    _utils.ajax(url, {
 	                        success: function success(json) {
 	                            g11n.bind(json, ns);
@@ -136,6 +139,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                        error: function error(xhr) {
 	                            throw new Error(xhr.statusText);
+	                        },
+
+	                        complete: function complete() {
+	                            _this._imports[url] = true;
 	                        }
 	                    });
 	                }

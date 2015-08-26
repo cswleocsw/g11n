@@ -7,6 +7,7 @@ export default class G11N {
         this.namespace = 'translation';
         this.placeholder = /\{%([^%]+)%\}/g;
         this.maps = {};
+        this._imports = {};
     }
 
     t(str, obj = {}, ns = this.namespace) {
@@ -45,7 +46,7 @@ export default class G11N {
         items.forEach((url) => {
             url = jsonSuffix(url);
 
-            if (url) {
+            if (url && !this._imports[url]) {
                 ajax(url, {
                     success: (json) => {
                         g11n.bind(json, ns);
@@ -53,6 +54,10 @@ export default class G11N {
 
                     error: (xhr) => {
                         throw new Error(xhr.statusText);
+                    },
+
+                    complete: () => {
+                        this._imports[url] = true;
                     }
                 });
             }
