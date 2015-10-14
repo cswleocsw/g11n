@@ -9,7 +9,7 @@ module.exports = function (config) {
 
         files: [
             'test/**/*.spec.js',
-            {pattern: 'test/mocks/*.json', watched: true, served: true, included: false}
+            { pattern: 'test/mocks/*.json', watched: true, served: true, included: false }
         ],
 
         exclude: [],
@@ -22,7 +22,7 @@ module.exports = function (config) {
         reporters: ['mocha', 'coverage'],
 
         //{type: 'text'} || {type: 'html', dir : 'coverage/'}
-        coverageReporter: {type: 'html', dir : 'coverage/'},
+        coverageReporter: {type: 'text'},
 
         port: 9876,
 
@@ -42,12 +42,10 @@ module.exports = function (config) {
             devtool: 'inline-source-map',
 
             module: {
-
                 preLoaders: [
-                    {test: /\.js/, exclude: /(node_modules|bower_components)/, loader: 'babel'},
-
+                    { test: /\.js/, exclude: /(node_modules|bower_components)/, loader: 'babel' },
                     // karma-coverage
-                    {test: /\.js/, exclude: /(node_modules|bower_components)/, loader: 'isparta'}
+                    { test: /\.js/, exclude: /(node_modules|bower_components)/, loader: 'isparta' }
                 ]
 
             }
