@@ -57,7 +57,7 @@ export default class G11N {
                     },
 
                     complete: () => {
-                        this._imports[url] = true;
+                        g11n._imports[url] = true;
                     }
                 });
             }

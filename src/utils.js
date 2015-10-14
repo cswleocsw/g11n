@@ -1,5 +1,5 @@
 const toString = Object.prototype.toString;
-const hasOwnProperty    = Object.prototype.hasOwnProperty;
+const hasOwnProperty = Object.prototype.hasOwnProperty;
 
 export function isObject(obj) {
     const type = typeof obj;
