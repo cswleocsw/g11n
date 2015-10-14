@@ -1,7 +1,7 @@
 var webpack = require('webpack');
 
 module.exports = {
-    entry: 'src/g11n',
+    entry: './src/g11n.js',
 
     output: {
         path: 'dist',
@@ -14,7 +14,7 @@ module.exports = {
         loaders: [
             {
                 test: /\.js?$/,
-                exclude: /(node_modules|bower_components)/,
+                exclude: /(node_modules)/,
                 loader: 'babel'
             }
         ]

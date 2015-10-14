@@ -1,4 +1,3 @@
-import 'babel/polyfill';
 import assign from 'object-assign';
 import { isArray, isObject, isString, jsonSuffix, ajax, get } from './utils'
 
