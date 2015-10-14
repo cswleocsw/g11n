@@ -1,6 +1,6 @@
 {
   "name": "g11n",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "main": "dist/g11n.min.js",
   "scripts": {
     "test": "./node_modules/.bin/karma start --single-run --browsers PhantomJS",
