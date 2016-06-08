@@ -1,12 +1,6 @@
 # g11n [![Build Status](https://travis-ci.org/cswleocsw/g11n.svg?branch=master)](https://travis-ci.org/cswleocsw/g11n)
 The g11n library was designed to allow user integrate difference language file into their application.
 
-# Notice
-Not recommended for use in the development of new products
-
-## Todos
-* cache loaded content by web storage
-
 # Usage
 ```javascript
 var g11n = new G11N();
