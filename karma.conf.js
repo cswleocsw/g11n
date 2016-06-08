@@ -1,59 +1,34 @@
 // Karma configuration
 
-module.exports = function (config) {
-    config.set({
+module.exports = function(config) {
+  config.set({
+    basePath: '',
 
-        basePath: '',
+    frameworks: ['mocha', 'chai'],
 
-        frameworks: ['mocha', 'chai'],
+    files: [
+      'test/g11n.js'
+    ],
 
-        files: [
-            'test/**/*.spec.js',
-            { pattern: 'test/mocks/*.json', watched: true, served: true, included: false }
-        ],
+    exclude: [],
 
-        exclude: [],
 
-        preprocessors: {
-            'src/**/*.js': ['webpack', 'sourcemap'],
-            'test/**/*.js': ['webpack', 'sourcemap']
-        },
+    preprocessors: {},
 
-        reporters: ['mocha', 'coverage'],
+    reporters: ['mocha'],
 
-        //{type: 'text'} || {type: 'html', dir : 'coverage/'}
-        coverageReporter: {type: 'text'},
+    port: 9876,
 
-        port: 9876,
+    colors: true,
 
-        colors: true,
+    logLevel: config.LOG_INFO,
 
-        logLevel: config.LOG_INFO,
+    autoWatch: true,
 
-        autoWatch: true,
+    browsers: ['PhantomJS'],
 
-        // PhantomJS || Chrome
-        browsers: ['PhantomJS'],
+    singleRun: true,
 
-        singleRun: true,
-
-        // webpack configuration
-        webpack: {
-            devtool: 'inline-source-map',
-
-            module: {
-                preLoaders: [
-                    { test: /\.js/, exclude: /(node_modules|bower_components)/, loader: 'babel' },
-                    // karma-coverage
-                    { test: /\.js/, exclude: /(node_modules|bower_components)/, loader: 'isparta' }
-                ]
-
-            }
-        },
-
-        webpackServer: {
-            noInfo: true
-        }
-
-    })
-};
+    concurrency: Infinity
+  })
+}

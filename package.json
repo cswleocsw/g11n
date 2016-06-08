@@ -1,36 +1,24 @@
 {
   "name": "g11n",
-  "version": "1.2.4",
-  "main": "dist/g11n.min.js",
+  "version": "2.0.0",
+  "main": "dist/g11n.js",
   "scripts": {
-    "test": "./node_modules/.bin/karma start --single-run --browsers PhantomJS",
-    "build": "webpack",
-    "product": "NODE_ENV=production webpack -p"
+    "test": "./node_modules/.bin/karma start"
   },
   "repository": {
     "type": "git",
     "url": "git://github.com/cswleocsw/g11n.git"
   },
   "license": "MIT",
-  "dependencies": {
-    "lodash": "^4.13.1",
-    "object-assign": "^4.1.0"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "babel": "^6.5.2",
-    "babel-core": "^6.9.1",
-    "babel-loader": "^6.2.4",
     "chai": "^3.5.0",
-    "isparta-loader": "^2.0.0",
     "karma": "^0.13.22",
     "karma-chai": "^0.1.0",
-    "karma-chrome-launcher": "^1.0.1",
-    "karma-coverage": "^1.0.0",
+    "karma-cli": "^1.0.0",
     "karma-mocha": "^1.0.1",
     "karma-mocha-reporter": "^2.0.3",
     "karma-phantomjs-launcher": "^1.0.0",
-    "karma-sourcemap-loader": "^0.3.7",
-    "karma-webpack": "^1.7.0",
     "mocha": "^2.5.3",
     "phantomjs-prebuilt": "^2.1.7",
     "webpack": "^1.13.1"
