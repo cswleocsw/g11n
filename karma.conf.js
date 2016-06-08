@@ -4,7 +4,7 @@ module.exports = function(config) {
   config.set({
     basePath: '',
 
-    frameworks: ['mocha', 'chai'],
+    frameworks: ['mocha', 'chai', 'es6-shim'],
 
     files: [
       'test/g11n.js'
@@ -12,8 +12,21 @@ module.exports = function(config) {
 
     exclude: [],
 
+    preprocessors: {
+      'test/g11n.js': ['webpack']
+    },
 
-    preprocessors: {},
+    webpack: {
+      module: {
+        loaders: [
+          { test: /\.js?$/, exclude: /node_modules/, loader: 'babel-loader' }
+        ]
+      }
+    },
+
+    webpackMiddleware: {
+      noInfo: true
+    },
 
     reporters: ['mocha'],
 
@@ -27,7 +40,7 @@ module.exports = function(config) {
 
     browsers: ['PhantomJS'],
 
-    singleRun: true,
+    singleRun: false,
 
     concurrency: Infinity
   })

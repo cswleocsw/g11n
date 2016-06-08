@@ -1,4 +1,5 @@
 let webpack = require('webpack');
+
 const pkg = require('./package.json');
 
 module.exports = {
