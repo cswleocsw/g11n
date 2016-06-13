@@ -15,13 +15,6 @@ var package = {
 g11n.bind(package);
 g11n.t('name'); // return g11n
 
-// render
-var descript = 'This package name is {%name%} and version is {%version%}';
-g11n.render(descript); // return This package name is g11n and version is 1.0.0
-
-// string replace
-g11n.t('descript', { ':name': 'g11n', ':version': '1.0.0' }); // return This package name is `g11n` and version is `1.0.0`
-
 // import json file
 
 // if your website has json's resource files
