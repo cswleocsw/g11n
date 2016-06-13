@@ -24,7 +24,7 @@ export default class G11N {
    * @param namespace
    */
   bind(data, namespace = this._namespace) {
-    if (data) {
+    if (isObject(data)) {
       this._maps[namespace] = Object.assign(this._maps[namespace] || {}, data);
     }
   }
@@ -37,7 +37,9 @@ export default class G11N {
    * @returns { string }
    */
   t(query, namespace = this._namespace) {
-    return get(this._maps, namespace ? `${namespace}.${query}` : query, query);
+    if (isString(query)) {
+      return get(this._maps, namespace ? `${namespace}.${query}` : query, query);
+    }
   }
 
   /**
@@ -47,7 +49,7 @@ export default class G11N {
    * @param namespace
    */
   imports(url, namespace = this.namespace) {
-    const urls = isArray(url) ? url : [ url ];
+    const urls = isArray(url) ? url : [url];
 
     urls.forEach((link) => {
       let linkWithSuffix = jsonSuffix(link);
