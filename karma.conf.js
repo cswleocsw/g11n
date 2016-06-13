@@ -4,7 +4,7 @@ module.exports = function(config) {
   config.set({
     basePath: '',
 
-    frameworks: ['mocha', 'chai', 'es6-shim'],
+    frameworks: ['mocha', 'chai', 'sinon', 'es6-shim'],
 
     files: [
       'test/g11n.js'

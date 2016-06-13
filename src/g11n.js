@@ -1,4 +1,6 @@
-import { isString, get, isObject, isArray } from 'lodash'
+import 'whatwg-fetch';
+import { isString, get, isObject, isArray } from 'lodash';
+import request from 'superagent';
 
 function jsonSuffix(str) {
   return /^(.)+\.json$/.test(str) ? str : (str + '.json');
@@ -29,21 +31,24 @@ export default class G11N {
     return get(this._maps, namespace ? `${namespace}.${query}` : query, query);
   }
 
-  imports(obj, ns = this.namespace) {
-    const items = isArray(obj) ? obj : [obj];
+  imports(url, namespace = this.namespace) {
+    const urls = isArray(url) ? url : [ url ];
 
-    items.forEach((url) => {
-      url = jsonSuffix(url);
-
-      if (url && !this._imports[url]) {
-        fetch(url)
-          .then((res) => {
-            console.log(res)
-            this._imports[url] = true;
-          })
-          .catch((err) => {
-            console.log(err)
-          });
+    urls.forEach((link) => {
+      let linkWithSuffix = jsonSuffix(link);
+      if (linkWithSuffix && !this._imports[linkWithSuffix]) {
+        let xhr = new XMLHttpRequest();
+        xhr.open('get', linkWithSuffix, false);
+        xhr.onreadystatechange = () => {
+          if (xhr.readyState == 4) {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              this.bind(JSON.parse(xhr.response), namespace)
+            } else {
+              throw new Error({ statusCode: xhr.status })
+            }
+          }
+        };
+        xhr.send();
       }
     });
   }
