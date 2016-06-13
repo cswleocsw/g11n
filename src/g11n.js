@@ -1,7 +1,11 @@
 import 'whatwg-fetch';
 import { isString, get, isObject, isArray } from 'lodash';
-import request from 'superagent';
 
+/**
+ * 加上 .json 後綴
+ * @param str
+ * @returns {string}
+ */
 function jsonSuffix(str) {
   return /^(.)+\.json$/.test(str) ? str : (str + '.json');
 }
@@ -14,6 +18,7 @@ export default class G11N {
   }
 
   /**
+   * 綁定語系資料
    *
    * @param data
    * @param namespace
@@ -25,12 +30,22 @@ export default class G11N {
   }
 
   /**
+   * 取回對應語系資料
    *
+   * @param query
+   * @param namespace
+   * @returns { string }
    */
   t(query, namespace = this._namespace) {
     return get(this._maps, namespace ? `${namespace}.${query}` : query, query);
   }
 
+  /**
+   * 自動載入 json 語系檔
+   *
+   * @param url
+   * @param namespace
+   */
   imports(url, namespace = this.namespace) {
     const urls = isArray(url) ? url : [ url ];
 
