@@ -1,19 +1,20 @@
 // Karma configuration
+let path = require('path')
 
 module.exports = function(config) {
   config.set({
     basePath: '',
 
-    frameworks: ['mocha', 'chai', 'sinon', 'es6-shim'],
+    frameworks: ['mocha', 'chai', 'sinon'],
 
     files: [
-      'test/g11n.js'
+      'test/index.js'
     ],
 
     exclude: [],
 
     preprocessors: {
-      'test/g11n.js': ['webpack']
+      'test/index.js': ['webpack']
     },
 
     webpack: {
@@ -21,6 +22,10 @@ module.exports = function(config) {
         loaders: [
           { test: /\.js?$/, exclude: /node_modules/, loader: 'babel-loader' }
         ]
+      },
+
+      resolve: {
+        root: [ path.resolve('./src') ]
       }
     },
 
