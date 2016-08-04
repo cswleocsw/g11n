@@ -1,59 +1,52 @@
 // Karma configuration
+let path = require('path')
 
-module.exports = function (config) {
-    config.set({
+module.exports = function(config) {
+  config.set({
+    basePath: '',
 
-        basePath: '',
+    frameworks: ['mocha', 'chai', 'sinon'],
 
-        frameworks: ['mocha', 'chai'],
+    files: [
+      'test/index.js'
+    ],
 
-        files: [
-            'test/**/*.spec.js',
-            { pattern: 'test/mocks/*.json', watched: true, served: true, included: false }
-        ],
+    exclude: [],
 
-        exclude: [],
+    preprocessors: {
+      'test/index.js': ['webpack']
+    },
 
-        preprocessors: {
-            'src/**/*.js': ['webpack', 'sourcemap'],
-            'test/**/*.js': ['webpack', 'sourcemap']
-        },
+    webpack: {
+      module: {
+        loaders: [
+          { test: /\.js?$/, exclude: /node_modules/, loader: 'babel-loader' }
+        ]
+      },
 
-        reporters: ['mocha', 'coverage'],
+      resolve: {
+        root: [ path.resolve('./src') ]
+      }
+    },
 
-        //{type: 'text'} || {type: 'html', dir : 'coverage/'}
-        coverageReporter: {type: 'text'},
+    webpackMiddleware: {
+      noInfo: true
+    },
 
-        port: 9876,
+    reporters: ['mocha'],
 
-        colors: true,
+    port: 9876,
 
-        logLevel: config.LOG_INFO,
+    colors: true,
 
-        autoWatch: true,
+    logLevel: config.LOG_INFO,
 
-        // PhantomJS || Chrome
-        browsers: ['PhantomJS'],
+    autoWatch: true,
 
-        singleRun: true,
+    browsers: ['PhantomJS'],
 
-        // webpack configuration
-        webpack: {
-            devtool: 'inline-source-map',
+    singleRun: false,
 
-            module: {
-                preLoaders: [
-                    { test: /\.js/, exclude: /(node_modules|bower_components)/, loader: 'babel' },
-                    // karma-coverage
-                    { test: /\.js/, exclude: /(node_modules|bower_components)/, loader: 'isparta' }
-                ]
-
-            }
-        },
-
-        webpackServer: {
-            noInfo: true
-        }
-
-    })
-};
+    concurrency: Infinity
+  })
+}
