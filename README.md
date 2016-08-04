@@ -4,9 +4,11 @@ The g11n library was designed to allow user integrate difference language file i
 ## CHANGELOG
 2016-08-04
 update version 2.0.1
- * FIX XMLHttpRequest asynchronous requests
 
-# Usage
+## TODO
+ * XMLHttpRequest asynchronous requests
+
+## Usage
 ```javascript
 var g11n = new G11N();
 
