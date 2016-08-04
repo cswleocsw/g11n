@@ -1,6 +1,11 @@
 # g11n [![Build Status](https://travis-ci.org/cswleocsw/g11n.svg?branch=master)](https://travis-ci.org/cswleocsw/g11n)
 The g11n library was designed to allow user integrate difference language file into their application.
 
+## CHANGELOG
+2016-08-04
+update version 2.0.1
+ * FIX XMLHttpRequest asynchronous requests
+
 # Usage
 ```javascript
 var g11n = new G11N();
@@ -37,7 +42,7 @@ g11n.t('hello', 'zh-cn'); // return hello(zh-cn)
 ## Support
 If you have any problem or suggestion please open an issue [here](https://github.com/cswleocsw/g11n/issues).
 
-## License 
+## License
 
 The MIT License
 
