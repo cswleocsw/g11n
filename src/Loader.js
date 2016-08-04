@@ -1,6 +1,10 @@
+/**
+ * Reference from Phaser.Loader - https://github.com/photonstorm/phaser/blob/master/src/loader/Loader.js
+ */
+import 'whatwg-fetch'
+
 export default class Loader {
   constructor() {
-    this.cache = {}
     this.isLoading = false
     this.hasLoaded = false
     this.fileList = []
@@ -11,12 +15,62 @@ export default class Loader {
     this.fileLoadStarted = false
   }
 
-  finishedLoading() {
-    console.log('todo')
+  reset() {
+    this.isLoading = false
+    this.fileList.length = 0
+    this.flightQueue.length = 0
+    this.totalFileCount = 0
+    this.loadedFileCount = 0
+    this.processingHead = 0
+    this.fileLoadStarted = false
   }
 
-  loadFile() {
+  finishedLoading(bool) {
+    if (this.hasLoaded) {
+      return
+    }
 
+    this.hasLoaded = true
+    this.isLoading = false
+
+    if (!bool && !this.fileLoadStarted) {
+      this.fileLoadStarted = true
+    }
+
+    this.reset()
+  }
+
+  loadFile(file) {
+    fetch(file.url)
+      .then((res) => {
+        if (res.status >= 400 && res.status <= 599) {
+          file.error = true
+          file.errorMessage = `load error from url ${file.url} (${res.status})`
+          console.warn(file.errorMessage)
+        } else {
+          if (res.ok) {
+            res.json()
+              .then((data) => {
+                file.loaded = true
+                file.data = data
+                file.callback && file.callback(file)
+              })
+              .catch((err) => {
+                file.error = true
+                file.errorMessage = `something error from load url ${file.url}`
+                console.warn(file.errorMessage, err)
+                this.processLoadQueue()
+              })
+          }
+        }
+        this.processLoadQueue()
+      })
+      .catch((err) => {
+        file.error = true
+        file.errorMessage = `something error from load url ${file.url}`
+        console.warn(file.errorMessage, err)
+        this.processLoadQueue()
+      })
   }
 
   processLoadQueue() {
@@ -38,17 +92,16 @@ export default class Loader {
     }
 
     for (let i = this.processingHead; i < this.fileList.length; i++) {
-      const file = this.fileList[i];
+      const file = this.fileList[i]
 
       if (file.loaded || file.error) {
         if (i === this.processingHead) {
-          this.processingHead = i + 1;
+          this.processingHead = i + 1
         }
-      } else if (!file.loading && this.flightQueue.length) {
+      } else if (!file.loading) {
         if (!this.fileLoadStarted) {
           this.fileLoadStarted = true
         }
-
         this.flightQueue.push(file)
         file.loading = true
         this.loadFile(file)
@@ -74,7 +127,7 @@ export default class Loader {
     this.processLoadQueue()
   }
 
-  getAssetIndex() {
+  getAssetIndex(key) {
     let index = -1
 
     for (let i = 0; i < this.fileList.length; i++) {
@@ -90,7 +143,7 @@ export default class Loader {
     return index
   }
 
-  load(url, key) {
+  addToFileList(url, key, callback) {
     if (url === undefined || url === null) {
       console.warn('Loader: No URL given')
       return this
@@ -103,10 +156,11 @@ export default class Loader {
     const file = {
       key: key,
       url: url,
+      callback,
       data: null,
       loading: false,
       loaded: false,
-      error: false
+      error: false,
     }
 
     const fileIndex = this.getAssetIndex(key)
@@ -115,7 +169,14 @@ export default class Loader {
       this.fileList.push(file)
       this.totalFileCount++
     }
-
     return this
+  }
+
+  load(url, key, callback) {
+    return this.addToFileList(url, key, callback);
+  }
+
+  isLoaded() {
+    return this.hasLoaded
   }
 }

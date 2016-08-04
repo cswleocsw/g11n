@@ -1,9 +1,10 @@
-let webpack = require('webpack');
+let path = require('path')
+let webpack = require('webpack')
 
-const pkg = require('./package.json');
+const pkg = require('./package.json')
 
 module.exports = {
-  entry: './src/g11n.js',
+  entry: './src/index.js',
   output: {
     path: 'dist',
     filename: process.env.NODE_ENV === 'production' ? `${pkg.name}.min.js` : `${pkg.name}.js`,
@@ -14,5 +15,8 @@ module.exports = {
     loaders: [
       { test: /\.js?$/, exclude: /node_modules/, loader: 'babel-loader' }
     ]
+  },
+  resolve: {
+    root: [ path.resolve('./src') ]
   }
-};
+}

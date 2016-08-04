@@ -1,8 +1,9 @@
 import G11N from 'g11n'
+import { response } from './helper'
 
 describe('G11N', () => {
   describe('#bind()', () => {
-    it('should be bind data to the _map attributes.', () => {
+    it('should be bind data to the map attributes.', () => {
       const g11n = new G11N()
       g11n.bind({ 'hello': 'world' })
       expect(g11n.maps[g11n.namespace]['hello']).to.equal('world')
@@ -10,41 +11,40 @@ describe('G11N', () => {
   })
 
   describe('#t()', () => {
-    const g11n = new G11N()
-    g11n.bind({ 'hello': 'world' })
+    let g11n, spy
+
+    beforeEach(() => {
+      g11n = new G11N()
+      g11n.bind({ 'hello': 'world' })
+      spy = sinon.stub(g11n.loader, 'start')
+    })
+
+    afterEach(() => {
+      spy.restore()
+    })
+
     it('should be get value', () => {
       expect(g11n.t('hello')).to.equal('world')
+      expect(spy.called).to.equal(true)
     })
   })
 
-  // describe('#import', () => {
-  //   let stub
-  //   beforeEach(() => {
-  //     stub = sinon.stub(window, 'fetch');
-  //     const res = new window.Response(JSON.stringify({ hello_US: 'world' }), {
-  //       status: 200,
-  //       headers: {
-  //         'Content-type': 'application/json'
-  //       }
-  //     });
-  //     window.fetch.returns(Promise.resolve(res));
-  //   })
-  //
-  //   afterEach(() => {
-  //     stub.restore()
-  //   })
-  //
-  //   it('should get the corresponding data from import resource json file', () => {
-  //     const g11n = new G11N()
-  //     g11n.imports('/locales/en-us')
-  //     expect(g11n.t('hello_US')).to.be.equal('world')
-  //   })
-    // it('should get the corresponding data from import resource json file with array format', () => {
-    //   const g11n = new G11N()
-    //   g11n.imports(['/base/test/mocks/en-us', '/base/test/mocks/zh-tw'])
-    //   server.respond()
-    //   expect(g11n.t('hello_US')).to.equal('world')
-    //   expect(g11n.t('hello_TW')).to.equal('世界')
-    // })
-  // })
+  describe('#import', () => {
+    it('should get the data from resource', () => {
+      const g11n = new G11N()
+      const stub = sinon.stub(g11n.loader, 'load')
+      g11n.imports('/locales/en-us')
+      expect(stub.called).to.be.equal(true)
+      expect(stub.callCount).to.be.equal(1)
+    })
+
+    it('should get the data from multi resource', () => {
+      const g11n = new G11N()
+      const stub = sinon.stub(g11n.loader, 'load')
+      g11n.imports(['/locales/en-us/hello', '/locales/zh-tw/hello'])
+      expect(stub.called).to.be.equal(true)
+      expect(stub.callCount).to.be.equal(2)
+    })
+  })
+
 })

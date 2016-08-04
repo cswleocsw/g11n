@@ -1,12 +1,9 @@
 /**
  * @author cswleocsw <cswleo@gmail.com>
  */
-import "babel-polyfill"
-import 'whatwg-fetch'
 import get from 'lodash.get'
 import Loader from 'Loader'
-
-const toString = Object.prototype.toString
+import { isString, jsonSuffix } from './utils'
 
 export default class G11N {
   constructor(options = {}) {
@@ -35,25 +32,32 @@ export default class G11N {
    * @returns { string }
    */
   t(query, namespace = this.namespace) {
-    this.loader.start()
-    if (toString.call(query) === '[object String]') {
+    // 阻塞式
+    while(this.loader.isLoaded()) {
+      // 等待取回全部資料
+    }
+
+    if (isString(query)) {
       return get(this.maps, namespace ? `${namespace}.${query}` : query, query)
     }
+
   }
 
-  // /**
-  //  * 自動載入 json 語系檔
-  //  *
-  //  * @param url
-  //  * @param namespace
-  //  */
-  //
-  // imports(file, namespace = this.namespace) {
-  //   let files = isArray(file) ? file : [file]
-  //   files = files.map((file) => jsonSuffix(file))
-  //
-  //   files.forEach((file) => {
-  //
-  //   })
-  // }
+  /**
+   * 自動載入 json 語系檔
+   *
+   * @param url
+   * @param namespace
+   */
+  imports(file, namespace = this.namespace) {
+    let files = Array.isArray(file) ? file : [file]
+    files.forEach((file) => {
+      this.loader.load(jsonSuffix(file), null, (file) => {
+        if (file && file.data && !file.error) {
+          this.bind(file.data, namespace)
+        }
+      })
+    })
+    this.loader.start()
+  }
 }
