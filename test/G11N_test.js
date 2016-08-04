@@ -11,21 +11,15 @@ describe('G11N', () => {
   })
 
   describe('#t()', () => {
-    let g11n, spy
+    let g11n
 
     beforeEach(() => {
       g11n = new G11N()
       g11n.bind({ 'hello': 'world' })
-      spy = sinon.stub(g11n.loader, 'start')
-    })
-
-    afterEach(() => {
-      spy.restore()
     })
 
     it('should be get value', () => {
       expect(g11n.t('hello')).to.equal('world')
-      expect(spy.called).to.equal(true)
     })
   })
 
