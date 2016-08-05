@@ -1,8 +1,15 @@
 /**
  * Reference from Phaser.Loader - https://github.com/photonstorm/phaser/blob/master/src/loader/Loader.js
  */
-export default class Loader {
+import EventEmitter from 'events'
+
+const Event = {
+  ON_LOAD_COMPLETE: 'LOAD_COMPLETE'
+}
+
+export default class Loader extends EventEmitter {
   constructor() {
+    super()
     this.isLoading = false
     this.hasLoaded = false
     this.fileList = []
@@ -35,11 +42,16 @@ export default class Loader {
       this.fileLoadStarted = true
     }
 
+    this.emit(Event.LOAD_COMPLETE)
     this.reset()
   }
 
   loadFile(file) {
-    // TODO: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
+    // TODO:
+    // Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience.
+    // For more help, check https://xhr.spec.whatwg.org/.
+    // Invoking 'send()' on a sync XHR during microtask execution is deprecated and will be removed in M53, around September 2016.
+    // See https://www.chromestatus.com/features/5647113010544640 for more details.
     let xhr = new XMLHttpRequest()
     xhr.open('GET', file.url, false)
 
@@ -175,3 +187,5 @@ export default class Loader {
     return this.hasLoaded
   }
 }
+
+Loader.Event = Event

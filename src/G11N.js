@@ -1,15 +1,22 @@
 /**
  * @author cswleocsw <cswleo@gmail.com>
  */
+import EventEmitter from 'events'
 import get from 'lodash.get'
 import Loader from 'Loader'
 import { isString, jsonSuffix } from './utils'
 
-export default class G11N {
+const Event = {
+  LOAD_COMPLETE: 'LOAD_COMPLETE'
+}
+
+export default class G11N extends EventEmitter {
   constructor(options = {}) {
+    super()
     this.namespace = options.namespace || 'translation'
     this.maps = options.maps || {}
     this.loader = new Loader()
+    this.loader.on(Loader.Event.LOAD_COMPLETE, () => this.emit(Event.LOAD_COMPLETE))
   }
 
   /**
@@ -32,6 +39,9 @@ export default class G11N {
    * @returns { string }
    */
   t(query, namespace = this.namespace) {
+    if (!isString(query)) {
+      return
+    }
     return get(this.maps, namespace ? `${namespace}.${query}` : query, query)
   }
 
@@ -53,3 +63,5 @@ export default class G11N {
     this.loader.start()
   }
 }
+
+G11N.Event = Event

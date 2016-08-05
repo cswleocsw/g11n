@@ -12,8 +12,27 @@
 <div>Open your Chrome DevTools to the console mode, try input `g11n.t('hello')`</div>
 <h3>how-to-use</h3>
 <pre>
+  // Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience.
+  // For more help, check https://xhr.spec.whatwg.org/.
+  // chrome warring:
+  // Invoking 'send()' on a sync XHR during microtask execution is deprecated and will be removed in M53, around September 2016.
+  // See https://www.chromestatus.com/features/5647113010544640 for more details.
+</pre>
+<pre>
+  // default is sync, it will be change to async when chrome is not support
   var g11n = new G11N()
   g11n.imports(['/hello.json', '/world.json'])
+
+  // sync
+  var g11n = new G11N()
+  g11n.imports(['/hello.json', '/world.json'])
+  console.log('sync: ' + g11n.t('hello'))
+
+  // async
+  var g11n = new G11N()
+  g11n.on(G11N.Event.LOAD_COMPLETE, function () {
+    console.log('async: ' + g11n.t('hello'))
+  })
 </pre>
 
 </body>
