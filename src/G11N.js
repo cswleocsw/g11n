@@ -38,11 +38,21 @@ export default class G11N extends EventEmitter {
    * @param namespace
    * @returns { string }
    */
-  t(query, namespace = this.namespace) {
+  t(query, obj = {}, namespace = this.namespace) {
     if (!isString(query)) {
       return
     }
-    return get(this.maps, namespace ? `${namespace}.${query}` : query, query)
+
+    let str = `${get(this.maps, `${namespace}.${query}`, query)}`
+
+    // 占位符處理
+    if (typeof obj === 'object' && str) {
+      Object.keys(obj).forEach((key) => {
+        str = str.replace(key, obj[key])
+      })
+    }
+
+    return str
   }
 
   /**

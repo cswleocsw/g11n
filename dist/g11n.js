@@ -149,12 +149,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 't',
 	    value: function t(query) {
-	      var namespace = arguments.length <= 1 || arguments[1] === undefined ? this.namespace : arguments[1];
+	      var obj = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	      var namespace = arguments.length <= 2 || arguments[2] === undefined ? this.namespace : arguments[2];
 
 	      if (!(0, _utils.isString)(query)) {
 	        return;
 	      }
-	      return (0, _lodash2.default)(this.maps, namespace ? namespace + '.' + query : query, query);
+
+	      var str = '' + (0, _lodash2.default)(this.maps, namespace + '.' + query, query);
+
+	      // 占位符處理
+	      if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object' && str) {
+	        Object.keys(obj).forEach(function (key) {
+	          str = str.replace(key, obj[key]);
+	        });
+	      }
+
+	      return str;
 	    }
 
 	    /**
