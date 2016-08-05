@@ -4,7 +4,7 @@
 import EventEmitter from 'events'
 
 const Event = {
-  ON_LOAD_COMPLETE: 'LOAD_COMPLETE'
+  LOAD_COMPLETE: 'LOAD_COMPLETE'
 }
 
 export default class Loader extends EventEmitter {
