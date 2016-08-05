@@ -1477,7 +1477,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	var Event = {
-	  ON_LOAD_COMPLETE: 'LOAD_COMPLETE'
+	  LOAD_COMPLETE: 'LOAD_COMPLETE'
 	};
 
 	var Loader = function (_EventEmitter) {
