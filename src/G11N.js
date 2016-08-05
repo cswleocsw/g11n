@@ -32,15 +32,7 @@ export default class G11N {
    * @returns { string }
    */
   t(query, namespace = this.namespace) {
-    // 阻塞式
-    while(this.loader.isLoaded()) {
-      // 等待取回全部資料
-    }
-
-    if (isString(query)) {
-      return get(this.maps, namespace ? `${namespace}.${query}` : query, query)
-    }
-
+    return get(this.maps, namespace ? `${namespace}.${query}` : query, query)
   }
 
   /**

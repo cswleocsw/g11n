@@ -1,80 +1,166 @@
 import Loader from 'Loader'
-import { response } from './helper'
 
 describe('Loader', () => {
-  let loader, stub
-
-  beforeEach(() => {
-    loader = new Loader()
-    stub = sinon.stub(window, 'fetch')
-    stub.withArgs('/locale/en-us/hello.json').returns(response(200, { hello_US: 'world' }))
-    stub.withArgs('/locale/zh-tw/hello.json').returns(response(200, { hello_TW: '世界' }))
-  })
-
-  afterEach(() => {
-    stub.restore()
-  })
-
-  describe('NOTE:', () => {
-    it('should be verify async file load complete', () => {
-      expect(true).to.be.equal(true)
-    })
-  })
+  const url = '/locale/en-us/hello.json'
+  const key = 'hello'
+  const callback = sinon.spy()
 
   describe('#load()', () => {
-    const key = 'hello'
-    const url = '/locale/en-us/hello.json'
-    it('should add request to file list', () => {
-      loader.load(url)
+    it('should call addToFileList', () => {
+      const loader = new Loader()
+      const stub = sinon.stub(loader, 'addToFileList')
+      loader.load(url, key, callback)
+      expect(stub.called).to.be.equal(true)
+      expect(stub.args[0][0]).to.be.equal(url)
+      expect(stub.args[0][1]).to.be.equal(key)
+      expect(stub.args[0][2]).to.be.equal(callback)
+      stub.restore()
+    })
+  })
+
+  describe('#addToFileList()', () => {
+    let loader
+
+    beforeEach(() => {
+      loader = new Loader()
+    })
+
+    it('should add request to file list with key and callback', () => {
+      loader.addToFileList(url, key, callback)
       expect(loader.fileList.length).to.be.equal(1)
       expect(loader.totalFileCount).to.be.equal(1)
       const file = loader.fileList[0]
+      expect(file.key).to.be.equal(key)
       expect(file.url).to.be.equal(url)
-      expect(file.key).to.be.equal(url)
+      expect(file.callback).to.be.equal(callback)
+      expect(file.data).to.be.equal(null)
       expect(file.loading).to.be.equal(false)
       expect(file.loaded).to.be.equal(false)
       expect(file.error).to.be.equal(false)
     })
 
-    it('should set key to file list when assign specific key', () => {
-      loader.load(url, key)
+    it('should has only one file setting', () => {
+      loader.addToFileList(url, key, callback)
+      loader.addToFileList(url, key, callback)
       expect(loader.fileList.length).to.be.equal(1)
       expect(loader.totalFileCount).to.be.equal(1)
+    })
+
+    it('should use url as key when key is undefined', () => {
+      loader.addToFileList(url)
       const file = loader.fileList[0]
-      expect(file.url).to.be.equal(url)
-      expect(file.key).to.be.equal(key)
-      expect(file.loading).to.be.equal(false)
-      expect(file.loaded).to.be.equal(false)
-      expect(file.error).to.be.equal(false)
+      expect(file.key).to.be.equal(url)
+    })
+
+    it('should use url as key when key is null', () => {
+      loader.addToFileList(url, null)
+      const file = loader.fileList[0]
+      expect(file.key).to.be.equal(url)
+    })
+
+    it('should use url as key when key is \'\'', () => {
+      loader.addToFileList(url, '')
+      const file = loader.fileList[0]
+      expect(file.key).to.be.equal(url)
+    })
+  })
+
+  describe('#getAssetIndex()', () => {
+    it('should has only one file setting', () => {
+      const loader = new Loader()
+      const file = {
+        key: key,
+        url: url,
+        callback,
+        data: null,
+        loading: false,
+        loaded: false,
+        error: false,
+      }
+      loader.fileList.push(file)
+      expect(loader.getAssetIndex(key)).to.be.equal(0)
     })
   })
 
   describe('#start()', () => {
-    it('should be run start procedure', () => {
-      sinon.stub(loader, 'processLoadQueue')
-      loader.load('/locale/en-us/hello.json')
+    let loader, stub
+
+    beforeEach(() => {
+      loader = new Loader()
+      stub = sinon.stub(loader, 'processLoadQueue')
+    })
+
+    afterEach(() => {
+      stub.restore()
+    })
+
+    it('should be run processLoadQueue procedure', () => {
+      loader.load(url)
       loader.start()
       expect(loader.hasLoaded).to.be.equal(false)
       expect(loader.isLoading).to.be.equal(true)
-      expect(loader.processLoadQueue.called).to.be.equal(true)
-      expect(loader.processLoadQueue.callCount).to.be.equal(1)
+      expect(stub.called).to.be.equal(true)
+    })
+
+    it('should be retun when loader has Loaded', () => {
+      loader.load(url)
+      loader.isLoading = true
+      expect(loader.isLoading).to.be.equal(true)
+      loader.start()
+      expect(stub.called).to.be.equal(false)
     })
   })
 
   describe('#processLoadQueue()', () => {
-    it('should be run processLoadQueue procedure', () => {
-      sinon.spy(loader, 'loadFile')
-      sinon.spy(loader, 'finishedLoading')
-      loader.load('/locale/en-us/hello.json')
+    let loader, stub, file
+
+    beforeEach(() => {
+      loader = new Loader()
+      stub = sinon.stub(loader, 'loadFile')
+      loader.load(url)
+      file = loader.fileList[0]
+    })
+
+    afterEach(() => {
+      stub.restore()
+    })
+
+    it('should add loading file to flightQueue', () => {
+      expect(loader.flightQueue.length).to.be.equal(0)
+      expect(loader.isLoading).to.be.equal(false)
+      expect(file.loaded).to.be.equal(false)
+      expect(file.error).to.be.equal(false)
       loader.start()
-      expect(loader.fileLoadStarted).to.be.equal(true)
-      const file = loader.fileList[0]
+      expect(file.loading).to.be.equal(true)
       expect(loader.flightQueue.length).to.be.equal(1)
       expect(loader.flightQueue[0]).to.be.equal(file)
-      expect(file.loading).to.be.equal(true)
-      expect(loader.loadFile.called).to.be.equal(true)
-      expect(loader.loadFile.callCount).to.be.equal(1)
-      expect(loader.finishedLoading.called).to.be.equal(false)
+      expect(stub.called).to.be.equal(true)
+      expect(loader.fileLoadStarted).to.be.equal(true)
+      expect(loader.loadedFileCount).to.be.equal(0)
     })
+
+    it('should remove file from flightQueue when file is loaded', () => {
+      loader.start()
+      expect(loader.flightQueue.length).to.be.equal(1)
+      expect(file.loading).to.be.equal(true)
+      expect(stub.called).to.be.equal(true)
+      file.loaded = true
+      loader.processLoadQueue()
+      expect(loader.flightQueue.length).to.be.equal(0)
+      expect(file.loading).to.be.equal(false)
+    })
+
+    it('should remove file from flightQueue when file is error', () => {
+      loader.start()
+      expect(loader.flightQueue.length).to.be.equal(1)
+      expect(file.loading).to.be.equal(true)
+      expect(stub.called).to.be.equal(true)
+      file.error = true
+      loader.processLoadQueue()
+      expect(loader.flightQueue.length).to.be.equal(0)
+      expect(file.loading).to.be.equal(false)
+    })
+
+
   })
 })

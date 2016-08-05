@@ -1,8 +1,6 @@
 /**
  * Reference from Phaser.Loader - https://github.com/photonstorm/phaser/blob/master/src/loader/Loader.js
  */
-import 'whatwg-fetch'
-
 export default class Loader {
   constructor() {
     this.isLoading = false
@@ -41,36 +39,36 @@ export default class Loader {
   }
 
   loadFile(file) {
-    fetch(file.url)
-      .then((res) => {
-        if (res.status >= 400 && res.status <= 599) {
-          file.error = true
-          file.errorMessage = `load error from url ${file.url} (${res.status})`
-          console.warn(file.errorMessage)
-        } else {
-          if (res.ok) {
-            res.json()
-              .then((data) => {
-                file.loaded = true
-                file.data = data
-                file.callback && file.callback(file)
-              })
-              .catch((err) => {
-                file.error = true
-                file.errorMessage = `something error from load url ${file.url}`
-                console.warn(file.errorMessage, err)
-                this.processLoadQueue()
-              })
-          }
-        }
-        this.processLoadQueue()
-      })
-      .catch((err) => {
+    // TODO: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
+    let xhr = new XMLHttpRequest()
+    xhr.open('GET', file.url, false)
+
+    const onError = (err) => {
+      file.error = true
+      file.errorMessage = `something error from load url ${file.url}`
+      console.warn(file.errorMessage, err)
+      this.processLoadQueue()
+    }
+
+    xhr.onload = () => {
+      if (xhr.status >= 400 && xhr.status <= 599) {
         file.error = true
-        file.errorMessage = `something error from load url ${file.url}`
-        console.warn(file.errorMessage, err)
-        this.processLoadQueue()
-      })
+        file.errorMessage = `load error from url ${file.url} (${xhr.status})`
+        console.warn(file.errorMessage)
+      } else {
+        try {
+          file.loaded = true
+          file.data = JSON.parse(xhr.responseText)
+          file.callback && file.callback(file)
+        } catch (err) {
+          onError(err)
+        }
+      }
+      this.processLoadQueue()
+    }
+
+    xhr.onerror = onError
+    xhr.send()
   }
 
   processLoadQueue() {
@@ -86,7 +84,6 @@ export default class Loader {
         this.flightQueue.splice(i, 1)
         i--
         file.loading = false
-        file.requestUrl = null
         this.loadedFileCount++
       }
     }
@@ -146,7 +143,6 @@ export default class Loader {
   addToFileList(url, key, callback) {
     if (url === undefined || url === null) {
       console.warn('Loader: No URL given')
-      return this
     }
 
     if (key === undefined || key === null || key === '') {
@@ -169,7 +165,6 @@ export default class Loader {
       this.fileList.push(file)
       this.totalFileCount++
     }
-    return this
   }
 
   load(url, key, callback) {
