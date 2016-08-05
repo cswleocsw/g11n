@@ -8,8 +8,9 @@ const Event = {
 }
 
 export default class Loader extends EventEmitter {
-  constructor() {
+  constructor(options = {}) {
     super()
+    this.async = options.async || false
     this.isLoading = false
     this.hasLoaded = false
     this.fileList = []
@@ -53,7 +54,7 @@ export default class Loader extends EventEmitter {
     // Invoking 'send()' on a sync XHR during microtask execution is deprecated and will be removed in M53, around September 2016.
     // See https://www.chromestatus.com/features/5647113010544640 for more details.
     let xhr = new XMLHttpRequest()
-    xhr.open('GET', file.url, false)
+    xhr.open('GET', file.url, this.async)
 
     const onError = (err) => {
       file.error = true

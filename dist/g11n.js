@@ -113,7 +113,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    _this.namespace = options.namespace || 'translation';
 	    _this.maps = options.maps || {};
-	    _this.loader = new _Loader2.default();
+	    _this.loader = new _Loader2.default(options);
 	    _this.loader.on(_Loader2.default.Event.LOAD_COMPLETE, function () {
 	      return _this.emit(Event.LOAD_COMPLETE);
 	    });
@@ -1484,10 +1484,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	  _inherits(Loader, _EventEmitter);
 
 	  function Loader() {
+	    var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
 	    _classCallCheck(this, Loader);
 
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Loader).call(this));
 
+	    _this.async = options.async || false;
 	    _this.isLoading = false;
 	    _this.hasLoaded = false;
 	    _this.fileList = [];
@@ -1538,7 +1541,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      // Invoking 'send()' on a sync XHR during microtask execution is deprecated and will be removed in M53, around September 2016.
 	      // See https://www.chromestatus.com/features/5647113010544640 for more details.
 	      var xhr = new XMLHttpRequest();
-	      xhr.open('GET', file.url, false);
+	      xhr.open('GET', file.url, this.async);
 
 	      var onError = function onError(err) {
 	        file.error = true;

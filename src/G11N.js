@@ -15,7 +15,7 @@ export default class G11N extends EventEmitter {
     super()
     this.namespace = options.namespace || 'translation'
     this.maps = options.maps || {}
-    this.loader = new Loader()
+    this.loader = new Loader(options)
     this.loader.on(Loader.Event.LOAD_COMPLETE, () => this.emit(Event.LOAD_COMPLETE))
   }
 
