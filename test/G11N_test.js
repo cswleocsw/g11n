@@ -1,4 +1,4 @@
-import G11N from 'g11n'
+import G11N from 'G11N'
 import { response } from './helper'
 
 describe('G11N', () => {
