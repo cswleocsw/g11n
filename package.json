@@ -1,6 +1,6 @@
 {
   "name": "g11n",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "main": "dist/g11n.min.js",
   "scripts": {
     "build": "NODE_ENV=production webpack -p && NODE_ENV=development webpack",
