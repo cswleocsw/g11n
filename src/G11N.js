@@ -72,6 +72,11 @@ export default class G11N extends EventEmitter {
     })
     this.loader.start()
   }
+
+  render(template, placeholder, namespace = this.namespace) {
+    const data = this.maps[namespace] || {}
+    return ('' + template).replace(placeholder, (m, $1) => get(data, $1, $1))
+  }
 }
 
 G11N.Event = Event

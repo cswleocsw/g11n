@@ -4,7 +4,7 @@
   "main": "dist/g11n.min.js",
   "scripts": {
     "build": "NODE_ENV=production webpack -p && NODE_ENV=development webpack",
-    "example": "cd example && node index.js",
+    "example": "browser-sync start --serveStatic example dist",
     "test": "./node_modules/.bin/karma start --single-run=true",
     "test:dev": "./node_modules/.bin/karma start"
   },
@@ -22,8 +22,8 @@
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-polyfill": "^6.13.0",
     "babel-preset-es2015": "^6.9.0",
+    "browser-sync": "^2.14.0",
     "chai": "^3.5.0",
-    "express": "^4.14.0",
     "karma": "^1.1.2",
     "karma-chai": "^0.1.0",
     "karma-cli": "^1.0.0",

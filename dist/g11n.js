@@ -192,6 +192,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	      });
 	      this.loader.start();
 	    }
+	  }, {
+	    key: 'render',
+	    value: function render(template, placeholder) {
+	      var namespace = arguments.length <= 2 || arguments[2] === undefined ? this.namespace : arguments[2];
+
+	      var data = this.maps[namespace] || {};
+	      return ('' + template).replace(placeholder, function (m, $1) {
+	        return (0, _lodash2.default)(data, $1, $1);
+	      });
+	    }
 	  }]);
 
 	  return G11N;
