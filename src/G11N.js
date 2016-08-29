@@ -11,6 +11,10 @@ function isString(str) {
   return typeof str === 'string'
 }
 
+function jsonSuffix(str) {
+  return /^(.)+\.json$/.test(str) ? str : `${str}.json`
+}
+
 export default class G11N {
   constructor(options = {}) {
     this.namespace = options.namespace ||'translation'
@@ -29,7 +33,7 @@ export default class G11N {
 
     if (str === undefined) {
       str = ''
-      logger.warn('g11n: query result is undefined, please check your query path or file is correct!')
+      logger.warn(`g11n: query ${query} result is undefined, please check your query path or file is correct!`)
     }
 
     // string replace
@@ -49,9 +53,8 @@ export default class G11N {
     let leng = files.length
     let loaded = 0
 
-
     if (leng > 0) {
-      Promise.all(files.map((file) => fetch(file)))
+      Promise.all(files.map((file) => fetch(jsonSuffix(file))))
         .then((values) => {
           values.forEach((res) => {
             if (res.status >= 200 && res.status < 300) {

@@ -87,6 +87,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return typeof str === 'string';
 	}
 
+	function jsonSuffix(str) {
+	  return (/^(.)+\.json$/.test(str) ? str : str + '.json'
+	  );
+	}
+
 	var G11N = function () {
 	  function G11N() {
 	    var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
@@ -113,7 +118,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      if (str === undefined) {
 	        str = '';
-	        logger.warn('g11n: query result is undefined, please check your query path or file is correct!');
+	        logger.warn('g11n: query ' + query + ' result is undefined, please check your query path or file is correct!');
 	      }
 
 	      // string replace
@@ -141,7 +146,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      if (leng > 0) {
 	        Promise.all(files.map(function (file) {
-	          return fetch(file);
+	          return fetch(jsonSuffix(file));
 	        })).then(function (values) {
 	          values.forEach(function (res) {
 	            if (res.status >= 200 && res.status < 300) {
