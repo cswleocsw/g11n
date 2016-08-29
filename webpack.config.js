@@ -1,22 +1,22 @@
-let path = require('path')
 let webpack = require('webpack')
+let env = process.env.NODE_ENV
 
-const pkg = require('./package.json')
-
-module.exports = {
-  entry: './src/index.js',
-  output: {
-    path: 'dist',
-    filename: process.env.NODE_ENV === 'production' ? `${pkg.name}.min.js` : `${pkg.name}.js`,
-    libraryTarget: 'umd',
-    library: pkg.name.toUpperCase()
-  },
+let config = {
   module: {
     loaders: [
-      { test: /\.js?$/, exclude: /node_modules/, loader: 'babel-loader' }
+      { test: /\.js$/, loaders: ['babel-loader'], exclude: /node_modules/ }
     ]
   },
-  resolve: {
-    root: [ path.resolve('./src') ]
-  }
+  output: {
+    library: 'G11N',
+    libraryTarget: 'umd'
+  },
+  plugins: [
+    new webpack.optimize.OccurrenceOrderPlugin(),
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(env)
+    })
+  ]
 }
+
+module.exports = config

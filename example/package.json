@@ -1,0 +1,8 @@
+{
+  "package": {
+    "name": "g11n",
+    "version": "1.0.0",
+    "description_1": "This package name is `:name` and version is `:version`",
+    "description_2": "This package name is `{%name%}` and version is `{%version%}`"
+  }
+}

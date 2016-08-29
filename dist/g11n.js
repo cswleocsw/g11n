@@ -56,473 +56,132 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	module.exports = __webpack_require__(1);
-
-/***/ },
-/* 1 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /**
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * @author cswleocsw <cswleo@gmail.com>
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      */
 
-	var _events = __webpack_require__(2);
 
-	var _events2 = _interopRequireDefault(_events);
+	__webpack_require__(3);
 
-	var _lodash = __webpack_require__(3);
+	var _lodash = __webpack_require__(1);
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Loader = __webpack_require__(4);
+	var _log4jsFree = __webpack_require__(2);
 
-	var _Loader2 = _interopRequireDefault(_Loader);
-
-	var _utils = __webpack_require__(5);
+	var _log4jsFree2 = _interopRequireDefault(_log4jsFree);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	var logger = _log4jsFree2.default.getLogger('G11N');
 
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @author cswleocsw <cswleo@gmail.com>
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+	function isString(str) {
+	  return typeof str === 'string';
+	}
 
-
-	var Event = {
-	  LOAD_COMPLETE: 'LOAD_COMPLETE'
-	};
-
-	var G11N = function (_EventEmitter) {
-	  _inherits(G11N, _EventEmitter);
-
+	var G11N = function () {
 	  function G11N() {
 	    var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
 	    _classCallCheck(this, G11N);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(G11N).call(this));
-
-	    _this.namespace = options.namespace || 'translation';
-	    _this.maps = options.maps || {};
-	    _this.loader = new _Loader2.default(options);
-	    _this.loader.on(_Loader2.default.Event.LOAD_COMPLETE, function () {
-	      return _this.emit(Event.LOAD_COMPLETE);
-	    });
-	    return _this;
+	    this.namespace = options.namespace || 'translation';
+	    this.placeholder = options.placeholder || /\{%([^%]+)%\}/g;
+	    this.storage = {};
 	  }
 
-	  /**
-	   * 綁定語系資料
-	   *
-	   * @param data
-	   * @param namespace
-	   */
-
-
 	  _createClass(G11N, [{
-	    key: 'bind',
-	    value: function bind(data) {
-	      var namespace = arguments.length <= 1 || arguments[1] === undefined ? this.namespace : arguments[1];
-
-	      if ((typeof data === 'undefined' ? 'undefined' : _typeof(data)) === 'object') {
-	        this.maps[namespace] = Object.assign(this.maps[namespace] || {}, data);
-	      }
-	    }
-
-	    /**
-	     * 取回對應語系資料
-	     *
-	     * @param query
-	     * @param namespace
-	     * @returns { string }
-	     */
-
-	  }, {
 	    key: 't',
 	    value: function t(query) {
-	      var obj = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-	      var namespace = arguments.length <= 2 || arguments[2] === undefined ? this.namespace : arguments[2];
+	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-	      if (!(0, _utils.isString)(query)) {
-	        return;
+	      if (!isString(query)) {
+	        return '';
 	      }
 
-	      var str = '' + (0, _lodash2.default)(this.maps, namespace + '.' + query, query);
+	      var namespace = options.namespace || this.namespace;
 
-	      // 占位符處理
-	      if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object' && str) {
-	        Object.keys(obj).forEach(function (key) {
-	          str = str.replace(key, obj[key]);
+	      var str = (0, _lodash2.default)(this.storage, namespace + '.' + query);
+
+	      if (str === undefined) {
+	        str = '';
+	        logger.warn('g11n: query result is undefined, please check your query path or file is correct!');
+	      }
+
+	      // string replace
+	      if (_typeof(options.replaces) === 'object' && str) {
+	        Object.keys(options.replaces).forEach(function (key) {
+	          str = str.replace(key, options.replaces[key]);
 	        });
 	      }
 
 	      return str;
 	    }
-
-	    /**
-	     * 自動載入 json 語系檔
-	     *
-	     * @param url
-	     * @param namespace
-	     */
-
 	  }, {
 	    key: 'imports',
-	    value: function imports(file) {
-	      var _this2 = this;
+	    value: function imports() {
+	      var _this = this;
 
-	      var namespace = arguments.length <= 1 || arguments[1] === undefined ? this.namespace : arguments[1];
+	      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	      var callback = arguments[1];
 
-	      var files = Array.isArray(file) ? file : [file];
-	      files.forEach(function (file) {
-	        _this2.loader.load((0, _utils.jsonSuffix)(file), null, function (file) {
-	          if (file && file.data && !file.error) {
-	            _this2.bind(file.data, namespace);
-	          }
+	      var files = options.files || [];
+	      var namespace = options.namespace || this.namespace;
+
+	      var leng = files.length;
+	      var loaded = 0;
+
+	      if (leng > 0) {
+	        Promise.all(files.map(function (file) {
+	          return fetch(file);
+	        })).then(function (values) {
+	          values.forEach(function (res) {
+	            if (res.status >= 200 && res.status < 300) {
+	              res.json().then(function (data) {
+	                loaded++;
+	                _this.storage[namespace] = Object.assign({}, _this.storage[namespace] || {}, data);
+	                if (loaded === leng && callback && typeof callback === 'function') {
+	                  callback();
+	                }
+	              });
+	            }
+	          });
+	        }).catch(function (err) {
+	          logger.warn(err);
 	        });
-	      });
-	      this.loader.start();
+	      }
 	    }
 	  }, {
 	    key: 'render',
-	    value: function render(template, placeholder) {
-	      var namespace = arguments.length <= 2 || arguments[2] === undefined ? this.namespace : arguments[2];
+	    value: function render(template) {
+	      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-	      var data = this.maps[namespace] || {};
-	      return ('' + template).replace(placeholder, function (m, $1) {
+	      var path = options.path || '';
+	      var namespace = options.namespace || this.namespace;
+	      var placeholder = options.placeholder || this.placeholder;
+	      var data = (0, _lodash2.default)(this.storage, namespace + '.' + path, {});
+	      return template.replace(placeholder, function (m, $1) {
 	        return (0, _lodash2.default)(data, $1, $1);
 	      });
 	    }
 	  }]);
 
 	  return G11N;
-	}(_events2.default);
+	}();
 
 	exports.default = G11N;
-
-
-	G11N.Event = Event;
 	module.exports = exports['default'];
 
 /***/ },
-/* 2 */
-/***/ function(module, exports) {
-
-	// Copyright Joyent, Inc. and other Node contributors.
-	//
-	// Permission is hereby granted, free of charge, to any person obtaining a
-	// copy of this software and associated documentation files (the
-	// "Software"), to deal in the Software without restriction, including
-	// without limitation the rights to use, copy, modify, merge, publish,
-	// distribute, sublicense, and/or sell copies of the Software, and to permit
-	// persons to whom the Software is furnished to do so, subject to the
-	// following conditions:
-	//
-	// The above copyright notice and this permission notice shall be included
-	// in all copies or substantial portions of the Software.
-	//
-	// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-	// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-	// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-	// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-	// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-	// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-	// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-	function EventEmitter() {
-	  this._events = this._events || {};
-	  this._maxListeners = this._maxListeners || undefined;
-	}
-	module.exports = EventEmitter;
-
-	// Backwards-compat with node 0.10.x
-	EventEmitter.EventEmitter = EventEmitter;
-
-	EventEmitter.prototype._events = undefined;
-	EventEmitter.prototype._maxListeners = undefined;
-
-	// By default EventEmitters will print a warning if more than 10 listeners are
-	// added to it. This is a useful default which helps finding memory leaks.
-	EventEmitter.defaultMaxListeners = 10;
-
-	// Obviously not all Emitters should be limited to 10. This function allows
-	// that to be increased. Set to zero for unlimited.
-	EventEmitter.prototype.setMaxListeners = function(n) {
-	  if (!isNumber(n) || n < 0 || isNaN(n))
-	    throw TypeError('n must be a positive number');
-	  this._maxListeners = n;
-	  return this;
-	};
-
-	EventEmitter.prototype.emit = function(type) {
-	  var er, handler, len, args, i, listeners;
-
-	  if (!this._events)
-	    this._events = {};
-
-	  // If there is no 'error' event listener then throw.
-	  if (type === 'error') {
-	    if (!this._events.error ||
-	        (isObject(this._events.error) && !this._events.error.length)) {
-	      er = arguments[1];
-	      if (er instanceof Error) {
-	        throw er; // Unhandled 'error' event
-	      } else {
-	        // At least give some kind of context to the user
-	        var err = new Error('Uncaught, unspecified "error" event. (' + er + ')');
-	        err.context = er;
-	        throw err;
-	      }
-	    }
-	  }
-
-	  handler = this._events[type];
-
-	  if (isUndefined(handler))
-	    return false;
-
-	  if (isFunction(handler)) {
-	    switch (arguments.length) {
-	      // fast cases
-	      case 1:
-	        handler.call(this);
-	        break;
-	      case 2:
-	        handler.call(this, arguments[1]);
-	        break;
-	      case 3:
-	        handler.call(this, arguments[1], arguments[2]);
-	        break;
-	      // slower
-	      default:
-	        args = Array.prototype.slice.call(arguments, 1);
-	        handler.apply(this, args);
-	    }
-	  } else if (isObject(handler)) {
-	    args = Array.prototype.slice.call(arguments, 1);
-	    listeners = handler.slice();
-	    len = listeners.length;
-	    for (i = 0; i < len; i++)
-	      listeners[i].apply(this, args);
-	  }
-
-	  return true;
-	};
-
-	EventEmitter.prototype.addListener = function(type, listener) {
-	  var m;
-
-	  if (!isFunction(listener))
-	    throw TypeError('listener must be a function');
-
-	  if (!this._events)
-	    this._events = {};
-
-	  // To avoid recursion in the case that type === "newListener"! Before
-	  // adding it to the listeners, first emit "newListener".
-	  if (this._events.newListener)
-	    this.emit('newListener', type,
-	              isFunction(listener.listener) ?
-	              listener.listener : listener);
-
-	  if (!this._events[type])
-	    // Optimize the case of one listener. Don't need the extra array object.
-	    this._events[type] = listener;
-	  else if (isObject(this._events[type]))
-	    // If we've already got an array, just append.
-	    this._events[type].push(listener);
-	  else
-	    // Adding the second element, need to change to array.
-	    this._events[type] = [this._events[type], listener];
-
-	  // Check for listener leak
-	  if (isObject(this._events[type]) && !this._events[type].warned) {
-	    if (!isUndefined(this._maxListeners)) {
-	      m = this._maxListeners;
-	    } else {
-	      m = EventEmitter.defaultMaxListeners;
-	    }
-
-	    if (m && m > 0 && this._events[type].length > m) {
-	      this._events[type].warned = true;
-	      console.error('(node) warning: possible EventEmitter memory ' +
-	                    'leak detected. %d listeners added. ' +
-	                    'Use emitter.setMaxListeners() to increase limit.',
-	                    this._events[type].length);
-	      if (typeof console.trace === 'function') {
-	        // not supported in IE 10
-	        console.trace();
-	      }
-	    }
-	  }
-
-	  return this;
-	};
-
-	EventEmitter.prototype.on = EventEmitter.prototype.addListener;
-
-	EventEmitter.prototype.once = function(type, listener) {
-	  if (!isFunction(listener))
-	    throw TypeError('listener must be a function');
-
-	  var fired = false;
-
-	  function g() {
-	    this.removeListener(type, g);
-
-	    if (!fired) {
-	      fired = true;
-	      listener.apply(this, arguments);
-	    }
-	  }
-
-	  g.listener = listener;
-	  this.on(type, g);
-
-	  return this;
-	};
-
-	// emits a 'removeListener' event iff the listener was removed
-	EventEmitter.prototype.removeListener = function(type, listener) {
-	  var list, position, length, i;
-
-	  if (!isFunction(listener))
-	    throw TypeError('listener must be a function');
-
-	  if (!this._events || !this._events[type])
-	    return this;
-
-	  list = this._events[type];
-	  length = list.length;
-	  position = -1;
-
-	  if (list === listener ||
-	      (isFunction(list.listener) && list.listener === listener)) {
-	    delete this._events[type];
-	    if (this._events.removeListener)
-	      this.emit('removeListener', type, listener);
-
-	  } else if (isObject(list)) {
-	    for (i = length; i-- > 0;) {
-	      if (list[i] === listener ||
-	          (list[i].listener && list[i].listener === listener)) {
-	        position = i;
-	        break;
-	      }
-	    }
-
-	    if (position < 0)
-	      return this;
-
-	    if (list.length === 1) {
-	      list.length = 0;
-	      delete this._events[type];
-	    } else {
-	      list.splice(position, 1);
-	    }
-
-	    if (this._events.removeListener)
-	      this.emit('removeListener', type, listener);
-	  }
-
-	  return this;
-	};
-
-	EventEmitter.prototype.removeAllListeners = function(type) {
-	  var key, listeners;
-
-	  if (!this._events)
-	    return this;
-
-	  // not listening for removeListener, no need to emit
-	  if (!this._events.removeListener) {
-	    if (arguments.length === 0)
-	      this._events = {};
-	    else if (this._events[type])
-	      delete this._events[type];
-	    return this;
-	  }
-
-	  // emit removeListener for all listeners on all events
-	  if (arguments.length === 0) {
-	    for (key in this._events) {
-	      if (key === 'removeListener') continue;
-	      this.removeAllListeners(key);
-	    }
-	    this.removeAllListeners('removeListener');
-	    this._events = {};
-	    return this;
-	  }
-
-	  listeners = this._events[type];
-
-	  if (isFunction(listeners)) {
-	    this.removeListener(type, listeners);
-	  } else if (listeners) {
-	    // LIFO order
-	    while (listeners.length)
-	      this.removeListener(type, listeners[listeners.length - 1]);
-	  }
-	  delete this._events[type];
-
-	  return this;
-	};
-
-	EventEmitter.prototype.listeners = function(type) {
-	  var ret;
-	  if (!this._events || !this._events[type])
-	    ret = [];
-	  else if (isFunction(this._events[type]))
-	    ret = [this._events[type]];
-	  else
-	    ret = this._events[type].slice();
-	  return ret;
-	};
-
-	EventEmitter.prototype.listenerCount = function(type) {
-	  if (this._events) {
-	    var evlistener = this._events[type];
-
-	    if (isFunction(evlistener))
-	      return 1;
-	    else if (evlistener)
-	      return evlistener.length;
-	  }
-	  return 0;
-	};
-
-	EventEmitter.listenerCount = function(emitter, type) {
-	  return emitter.listenerCount(type);
-	};
-
-	function isFunction(arg) {
-	  return typeof arg === 'function';
-	}
-
-	function isNumber(arg) {
-	  return typeof arg === 'number';
-	}
-
-	function isObject(arg) {
-	  return typeof arg === 'object' && arg !== null;
-	}
-
-	function isUndefined(arg) {
-	  return arg === void 0;
-	}
-
-
-/***/ },
-/* 3 */
+/* 1 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/**
@@ -556,7 +215,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	/**
 	 * Used to match `RegExp`
-	 * [syntax characters](http://ecma-international.org/ecma-262/6.0/#sec-patterns).
+	 * [syntax characters](http://ecma-international.org/ecma-262/7.0/#sec-patterns).
 	 */
 	var reRegExpChar = /[\\^$.*+?()[\]{}|]/g;
 
@@ -608,6 +267,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	/** Used for built-in method references. */
 	var arrayProto = Array.prototype,
+	    funcProto = Function.prototype,
 	    objectProto = Object.prototype;
 
 	/** Used to detect overreaching core-js shims. */
@@ -620,14 +280,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}());
 
 	/** Used to resolve the decompiled source of functions. */
-	var funcToString = Function.prototype.toString;
+	var funcToString = funcProto.toString;
 
 	/** Used to check objects for own properties. */
 	var hasOwnProperty = objectProto.hasOwnProperty;
 
 	/**
 	 * Used to resolve the
-	 * [`toStringTag`](http://ecma-international.org/ecma-262/6.0/#sec-object.prototype.tostring)
+	 * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
 	 * of values.
 	 */
 	var objectToString = objectProto.toString;
@@ -958,7 +618,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Gets the index at which the `key` is found in `array` of key-value pairs.
 	 *
 	 * @private
-	 * @param {Array} array The array to search.
+	 * @param {Array} array The array to inspect.
 	 * @param {*} key The key to search for.
 	 * @returns {number} Returns the index of the matched value, else `-1`.
 	 */
@@ -1177,7 +837,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * **Note:** The cache is exposed as the `cache` property on the memoized
 	 * function. Its creation may be customized by replacing the `_.memoize.Cache`
 	 * constructor with one whose instances implement the
-	 * [`Map`](http://ecma-international.org/ecma-262/6.0/#sec-properties-of-the-map-prototype-object)
+	 * [`Map`](http://ecma-international.org/ecma-262/7.0/#sec-properties-of-the-map-prototype-object)
 	 * method interface of `delete`, `get`, `has`, and `set`.
 	 *
 	 * @static
@@ -1236,7 +896,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	/**
 	 * Performs a
-	 * [`SameValueZero`](http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero)
+	 * [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
 	 * comparison between two values to determine if they are equivalent.
 	 *
 	 * @static
@@ -1314,15 +974,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	function isFunction(value) {
 	  // The use of `Object#toString` avoids issues with the `typeof` operator
-	  // in Safari 8 which returns 'object' for typed array and weak map constructors,
-	  // and PhantomJS 1.9 which returns 'function' for `NodeList` instances.
+	  // in Safari 8-9 which returns 'object' for typed array and other constructors.
 	  var tag = isObject(value) ? objectToString.call(value) : '';
 	  return tag == funcTag || tag == genTag;
 	}
 
 	/**
 	 * Checks if `value` is the
-	 * [language type](http://www.ecma-international.org/ecma-262/6.0/#sec-ecmascript-language-types)
+	 * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
 	 * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
 	 *
 	 * @static
@@ -1460,282 +1119,449 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 4 */
+/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _events = __webpack_require__(2);
-
-	var _events2 = _interopRequireDefault(_events);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Reference from Phaser.Loader - https://github.com/photonstorm/phaser/blob/master/src/loader/Loader.js
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
-
-
-	var Event = {
-	  LOAD_COMPLETE: 'LOAD_COMPLETE'
-	};
-
-	var Loader = function (_EventEmitter) {
-	  _inherits(Loader, _EventEmitter);
-
-	  function Loader() {
-	    var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-	    _classCallCheck(this, Loader);
-
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Loader).call(this));
-
-	    _this.async = options.async || false;
-	    _this.isLoading = false;
-	    _this.hasLoaded = false;
-	    _this.fileList = [];
-	    _this.totalFileCount = 0;
-	    _this.flightQueue = [];
-	    _this.loadedFileCount = 0;
-	    _this.processingHead = 0;
-	    _this.fileLoadStarted = false;
-	    return _this;
-	  }
-
-	  _createClass(Loader, [{
-	    key: 'reset',
-	    value: function reset() {
-	      this.isLoading = false;
-	      this.fileList.length = 0;
-	      this.flightQueue.length = 0;
-	      this.totalFileCount = 0;
-	      this.loadedFileCount = 0;
-	      this.processingHead = 0;
-	      this.fileLoadStarted = false;
-	    }
-	  }, {
-	    key: 'finishedLoading',
-	    value: function finishedLoading(bool) {
-	      if (this.hasLoaded) {
-	        return;
-	      }
-
-	      this.hasLoaded = true;
-	      this.isLoading = false;
-
-	      if (!bool && !this.fileLoadStarted) {
-	        this.fileLoadStarted = true;
-	      }
-
-	      this.emit(Event.LOAD_COMPLETE);
-	      this.reset();
-	    }
-	  }, {
-	    key: 'loadFile',
-	    value: function loadFile(file) {
-	      var _this2 = this;
-
-	      // TODO:
-	      // Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience.
-	      // For more help, check https://xhr.spec.whatwg.org/.
-	      // Invoking 'send()' on a sync XHR during microtask execution is deprecated and will be removed in M53, around September 2016.
-	      // See https://www.chromestatus.com/features/5647113010544640 for more details.
-	      var xhr = new XMLHttpRequest();
-	      xhr.open('GET', file.url, this.async);
-
-	      var onError = function onError(err) {
-	        file.error = true;
-	        file.errorMessage = 'something error from load url ' + file.url;
-	        console.warn(file.errorMessage, err);
-	        _this2.processLoadQueue();
-	      };
-
-	      xhr.onload = function () {
-	        if (xhr.status >= 400 && xhr.status <= 599) {
-	          file.error = true;
-	          file.errorMessage = 'load error from url ' + file.url + ' (' + xhr.status + ')';
-	          console.warn(file.errorMessage);
-	        } else {
-	          try {
-	            file.loaded = true;
-	            file.data = JSON.parse(xhr.responseText);
-	            file.callback && file.callback(file);
-	          } catch (err) {
-	            onError(err);
-	          }
-	        }
-	        _this2.processLoadQueue();
-	      };
-
-	      xhr.onerror = onError;
-	      xhr.send();
-	    }
-	  }, {
-	    key: 'processLoadQueue',
-	    value: function processLoadQueue() {
-	      var _this3 = this;
-
-	      if (!this.isLoading) {
-	        this.finishedLoading(true);
-	        return;
-	      }
-
-	      for (var i = 0; i < this.flightQueue.length; i++) {
-	        var file = this.flightQueue[i];
-
-	        if (file.loaded || file.error) {
-	          this.flightQueue.splice(i, 1);
-	          i--;
-	          file.loading = false;
-	          this.loadedFileCount++;
-	        }
-	      }
-
-	      for (var _i = this.processingHead; _i < this.fileList.length; _i++) {
-	        var _file = this.fileList[_i];
-
-	        if (_file.loaded || _file.error) {
-	          if (_i === this.processingHead) {
-	            this.processingHead = _i + 1;
-	          }
-	        } else if (!_file.loading) {
-	          if (!this.fileLoadStarted) {
-	            this.fileLoadStarted = true;
-	          }
-	          this.flightQueue.push(_file);
-	          _file.loading = true;
-	          this.loadFile(_file);
-	        }
-	      }
-
-	      // error handle
-	      if (this.processingHead >= this.fileList.length) {
-	        this.finishedLoading();
-	      } else if (!this.flightQueue.length) {
-	        console.warn('aborting: processing queue empty, loading may have stalled');
-	        setTimeout(function () {
-	          return _this3.finishedLoading(true);
-	        }, 2000);
-	      }
-	    }
-	  }, {
-	    key: 'start',
-	    value: function start() {
-	      if (this.isLoading) {
-	        return;
-	      }
-
-	      this.hasLoaded = false;
-	      this.isLoading = true;
-	      this.processLoadQueue();
-	    }
-	  }, {
-	    key: 'getAssetIndex',
-	    value: function getAssetIndex(key) {
-	      var index = -1;
-
-	      for (var i = 0; i < this.fileList.length; i++) {
-	        var file = this.fileList[i];
-	        if (file.key === key) {
-	          index = i;
-	          if (!file.loaded && !file.loading) {
-	            break;
-	          }
-	        }
-	      }
-
-	      return index;
-	    }
-	  }, {
-	    key: 'addToFileList',
-	    value: function addToFileList(url, key, callback) {
-	      if (url === undefined || url === null) {
-	        console.warn('Loader: No URL given');
-	      }
-
-	      if (key === undefined || key === null || key === '') {
-	        key = url;
-	      }
-
-	      var file = {
-	        key: key,
-	        url: url,
-	        callback: callback,
-	        data: null,
-	        loading: false,
-	        loaded: false,
-	        error: false
-	      };
-
-	      var fileIndex = this.getAssetIndex(key);
-
-	      if (fileIndex === -1) {
-	        this.fileList.push(file);
-	        this.totalFileCount++;
-	      }
-	    }
-	  }, {
-	    key: 'load',
-	    value: function load(url, key, callback) {
-	      return this.addToFileList(url, key, callback);
-	    }
-	  }, {
-	    key: 'isLoaded',
-	    value: function isLoaded() {
-	      return this.hasLoaded;
-	    }
-	  }]);
-
-	  return Loader;
-	}(_events2.default);
-
-	exports.default = Loader;
-
-
-	Loader.Event = Event;
-	module.exports = exports['default'];
+	!function(t,e){ true?module.exports=e():"function"==typeof define&&define.amd?define([],e):"object"==typeof exports?exports.Log4js=e():t.Log4js=e()}(this,function(){return function(t){function e(n){if(o[n])return o[n].exports;var r=o[n]={exports:{},id:n,loaded:!1};return t[n].call(r.exports,r,r.exports,e),r.loaded=!0,r.exports}var o={};return e.m=t,e.c=o,e.p="",e(0)}([function(t,e,o){"use strict";function n(t){return t&&t.__esModule?t:{"default":t}}function r(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}e.__esModule=!0;var i=o(1),f=n(i),a=function(){function t(){r(this,t)}return t.prototype.getLogger=function(t){var e=new f["default"](t);return e},t}();e["default"]=new a,t.exports=e["default"]},function(t,e){"use strict";function o(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function n(t){return"string"==typeof t}function r(t,e){var o=""+t;return o.length>=e?o:r("0"+o,e)}function i(){var t=new Date;return t.getFullYear()+"-"+(t.getMonth()+1)+"-"+t.getDate()+" "+r(t.getHours(),2)+":"+r(t.getMinutes(),2)+":"+r(t.getSeconds(),2)+":"+t.getMilliseconds()}e.__esModule=!0;var f=e.LEVEL_MAP={DEBUG:1,INFO:2,WARN:3,ERROR:4,FATAL:5},a=e.LEVEL_KEY={1:"DEBUG",2:"INFO",3:"WARN",4:"ERROR",5:"FATAL"},u=function(){function t(){var e=arguments.length<=0||void 0===arguments[0]?"LOG":arguments[0],n=arguments.length<=1||void 0===arguments[1]?{}:arguments[1];o(this,t),this.name=e,this.level=f[n.level]||f.INFO}return t.prototype.setLevel=function(t){f[t]&&(this.level=f[t])},t.prototype.debug=function(t){if(n(t)){for(var e=arguments.length,o=Array(e>1?e-1:0),r=1;r<e;r++)o[r-1]=arguments[r];this.write(f.DEBUG,t,o)}},t.prototype.info=function(t){if(n(t)){for(var e=arguments.length,o=Array(e>1?e-1:0),r=1;r<e;r++)o[r-1]=arguments[r];this.write(f.INFO,t,o)}},t.prototype.warn=function(t){if(n(t)){for(var e=arguments.length,o=Array(e>1?e-1:0),r=1;r<e;r++)o[r-1]=arguments[r];this.write(f.WARN,t,o)}},t.prototype.error=function(t){if(n(t)){for(var e=arguments.length,o=Array(e>1?e-1:0),r=1;r<e;r++)o[r-1]=arguments[r];this.write(f.ERROR,t,o)}},t.prototype.fatal=function(t){if(n(t)){for(var e=arguments.length,o=Array(e>1?e-1:0),r=1;r<e;r++)o[r-1]=arguments[r];this.write(f.FATAL,t,o)}},t.prototype.write=function(t,e,o){if(t>=this.level&&n(e)){var r=console[a[t].toLowerCase()]?console[a[t].toLowerCase()]:console.log;r.apply(void 0,["["+i()+"] ["+a[t]+"] "+this.name+" - "+e].concat(o))}},t}();e["default"]=u}])});
 
 /***/ },
-/* 5 */
+/* 3 */
 /***/ function(module, exports) {
 
-	'use strict';
+	(function(self) {
+	  'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.jsonSuffix = jsonSuffix;
-	exports.isString = isString;
-	var toString = Object.prototype.toString;
+	  if (self.fetch) {
+	    return
+	  }
 
-	/**
-	 * 加上 .json 後綴
-	 * @param str
-	 * @returns {string}
-	 */
-	function jsonSuffix(str) {
-	  return (/^(.)+\.json$/.test(str) ? str : str + '.json'
-	  );
-	}
+	  var support = {
+	    searchParams: 'URLSearchParams' in self,
+	    iterable: 'Symbol' in self && 'iterator' in Symbol,
+	    blob: 'FileReader' in self && 'Blob' in self && (function() {
+	      try {
+	        new Blob()
+	        return true
+	      } catch(e) {
+	        return false
+	      }
+	    })(),
+	    formData: 'FormData' in self,
+	    arrayBuffer: 'ArrayBuffer' in self
+	  }
 
-	/**
-	 * 字串類型檢楂
-	 * @param str
-	 * @returns {boolean}
-	 */
-	function isString(str) {
-	  return toString.call(str) === '[object String]';
-	}
+	  function normalizeName(name) {
+	    if (typeof name !== 'string') {
+	      name = String(name)
+	    }
+	    if (/[^a-z0-9\-#$%&'*+.\^_`|~]/i.test(name)) {
+	      throw new TypeError('Invalid character in header field name')
+	    }
+	    return name.toLowerCase()
+	  }
+
+	  function normalizeValue(value) {
+	    if (typeof value !== 'string') {
+	      value = String(value)
+	    }
+	    return value
+	  }
+
+	  // Build a destructive iterator for the value list
+	  function iteratorFor(items) {
+	    var iterator = {
+	      next: function() {
+	        var value = items.shift()
+	        return {done: value === undefined, value: value}
+	      }
+	    }
+
+	    if (support.iterable) {
+	      iterator[Symbol.iterator] = function() {
+	        return iterator
+	      }
+	    }
+
+	    return iterator
+	  }
+
+	  function Headers(headers) {
+	    this.map = {}
+
+	    if (headers instanceof Headers) {
+	      headers.forEach(function(value, name) {
+	        this.append(name, value)
+	      }, this)
+
+	    } else if (headers) {
+	      Object.getOwnPropertyNames(headers).forEach(function(name) {
+	        this.append(name, headers[name])
+	      }, this)
+	    }
+	  }
+
+	  Headers.prototype.append = function(name, value) {
+	    name = normalizeName(name)
+	    value = normalizeValue(value)
+	    var list = this.map[name]
+	    if (!list) {
+	      list = []
+	      this.map[name] = list
+	    }
+	    list.push(value)
+	  }
+
+	  Headers.prototype['delete'] = function(name) {
+	    delete this.map[normalizeName(name)]
+	  }
+
+	  Headers.prototype.get = function(name) {
+	    var values = this.map[normalizeName(name)]
+	    return values ? values[0] : null
+	  }
+
+	  Headers.prototype.getAll = function(name) {
+	    return this.map[normalizeName(name)] || []
+	  }
+
+	  Headers.prototype.has = function(name) {
+	    return this.map.hasOwnProperty(normalizeName(name))
+	  }
+
+	  Headers.prototype.set = function(name, value) {
+	    this.map[normalizeName(name)] = [normalizeValue(value)]
+	  }
+
+	  Headers.prototype.forEach = function(callback, thisArg) {
+	    Object.getOwnPropertyNames(this.map).forEach(function(name) {
+	      this.map[name].forEach(function(value) {
+	        callback.call(thisArg, value, name, this)
+	      }, this)
+	    }, this)
+	  }
+
+	  Headers.prototype.keys = function() {
+	    var items = []
+	    this.forEach(function(value, name) { items.push(name) })
+	    return iteratorFor(items)
+	  }
+
+	  Headers.prototype.values = function() {
+	    var items = []
+	    this.forEach(function(value) { items.push(value) })
+	    return iteratorFor(items)
+	  }
+
+	  Headers.prototype.entries = function() {
+	    var items = []
+	    this.forEach(function(value, name) { items.push([name, value]) })
+	    return iteratorFor(items)
+	  }
+
+	  if (support.iterable) {
+	    Headers.prototype[Symbol.iterator] = Headers.prototype.entries
+	  }
+
+	  function consumed(body) {
+	    if (body.bodyUsed) {
+	      return Promise.reject(new TypeError('Already read'))
+	    }
+	    body.bodyUsed = true
+	  }
+
+	  function fileReaderReady(reader) {
+	    return new Promise(function(resolve, reject) {
+	      reader.onload = function() {
+	        resolve(reader.result)
+	      }
+	      reader.onerror = function() {
+	        reject(reader.error)
+	      }
+	    })
+	  }
+
+	  function readBlobAsArrayBuffer(blob) {
+	    var reader = new FileReader()
+	    reader.readAsArrayBuffer(blob)
+	    return fileReaderReady(reader)
+	  }
+
+	  function readBlobAsText(blob) {
+	    var reader = new FileReader()
+	    reader.readAsText(blob)
+	    return fileReaderReady(reader)
+	  }
+
+	  function Body() {
+	    this.bodyUsed = false
+
+	    this._initBody = function(body) {
+	      this._bodyInit = body
+	      if (typeof body === 'string') {
+	        this._bodyText = body
+	      } else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
+	        this._bodyBlob = body
+	      } else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
+	        this._bodyFormData = body
+	      } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
+	        this._bodyText = body.toString()
+	      } else if (!body) {
+	        this._bodyText = ''
+	      } else if (support.arrayBuffer && ArrayBuffer.prototype.isPrototypeOf(body)) {
+	        // Only support ArrayBuffers for POST method.
+	        // Receiving ArrayBuffers happens via Blobs, instead.
+	      } else {
+	        throw new Error('unsupported BodyInit type')
+	      }
+
+	      if (!this.headers.get('content-type')) {
+	        if (typeof body === 'string') {
+	          this.headers.set('content-type', 'text/plain;charset=UTF-8')
+	        } else if (this._bodyBlob && this._bodyBlob.type) {
+	          this.headers.set('content-type', this._bodyBlob.type)
+	        } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
+	          this.headers.set('content-type', 'application/x-www-form-urlencoded;charset=UTF-8')
+	        }
+	      }
+	    }
+
+	    if (support.blob) {
+	      this.blob = function() {
+	        var rejected = consumed(this)
+	        if (rejected) {
+	          return rejected
+	        }
+
+	        if (this._bodyBlob) {
+	          return Promise.resolve(this._bodyBlob)
+	        } else if (this._bodyFormData) {
+	          throw new Error('could not read FormData body as blob')
+	        } else {
+	          return Promise.resolve(new Blob([this._bodyText]))
+	        }
+	      }
+
+	      this.arrayBuffer = function() {
+	        return this.blob().then(readBlobAsArrayBuffer)
+	      }
+
+	      this.text = function() {
+	        var rejected = consumed(this)
+	        if (rejected) {
+	          return rejected
+	        }
+
+	        if (this._bodyBlob) {
+	          return readBlobAsText(this._bodyBlob)
+	        } else if (this._bodyFormData) {
+	          throw new Error('could not read FormData body as text')
+	        } else {
+	          return Promise.resolve(this._bodyText)
+	        }
+	      }
+	    } else {
+	      this.text = function() {
+	        var rejected = consumed(this)
+	        return rejected ? rejected : Promise.resolve(this._bodyText)
+	      }
+	    }
+
+	    if (support.formData) {
+	      this.formData = function() {
+	        return this.text().then(decode)
+	      }
+	    }
+
+	    this.json = function() {
+	      return this.text().then(JSON.parse)
+	    }
+
+	    return this
+	  }
+
+	  // HTTP methods whose capitalization should be normalized
+	  var methods = ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT']
+
+	  function normalizeMethod(method) {
+	    var upcased = method.toUpperCase()
+	    return (methods.indexOf(upcased) > -1) ? upcased : method
+	  }
+
+	  function Request(input, options) {
+	    options = options || {}
+	    var body = options.body
+	    if (Request.prototype.isPrototypeOf(input)) {
+	      if (input.bodyUsed) {
+	        throw new TypeError('Already read')
+	      }
+	      this.url = input.url
+	      this.credentials = input.credentials
+	      if (!options.headers) {
+	        this.headers = new Headers(input.headers)
+	      }
+	      this.method = input.method
+	      this.mode = input.mode
+	      if (!body) {
+	        body = input._bodyInit
+	        input.bodyUsed = true
+	      }
+	    } else {
+	      this.url = input
+	    }
+
+	    this.credentials = options.credentials || this.credentials || 'omit'
+	    if (options.headers || !this.headers) {
+	      this.headers = new Headers(options.headers)
+	    }
+	    this.method = normalizeMethod(options.method || this.method || 'GET')
+	    this.mode = options.mode || this.mode || null
+	    this.referrer = null
+
+	    if ((this.method === 'GET' || this.method === 'HEAD') && body) {
+	      throw new TypeError('Body not allowed for GET or HEAD requests')
+	    }
+	    this._initBody(body)
+	  }
+
+	  Request.prototype.clone = function() {
+	    return new Request(this)
+	  }
+
+	  function decode(body) {
+	    var form = new FormData()
+	    body.trim().split('&').forEach(function(bytes) {
+	      if (bytes) {
+	        var split = bytes.split('=')
+	        var name = split.shift().replace(/\+/g, ' ')
+	        var value = split.join('=').replace(/\+/g, ' ')
+	        form.append(decodeURIComponent(name), decodeURIComponent(value))
+	      }
+	    })
+	    return form
+	  }
+
+	  function headers(xhr) {
+	    var head = new Headers()
+	    var pairs = (xhr.getAllResponseHeaders() || '').trim().split('\n')
+	    pairs.forEach(function(header) {
+	      var split = header.trim().split(':')
+	      var key = split.shift().trim()
+	      var value = split.join(':').trim()
+	      head.append(key, value)
+	    })
+	    return head
+	  }
+
+	  Body.call(Request.prototype)
+
+	  function Response(bodyInit, options) {
+	    if (!options) {
+	      options = {}
+	    }
+
+	    this.type = 'default'
+	    this.status = options.status
+	    this.ok = this.status >= 200 && this.status < 300
+	    this.statusText = options.statusText
+	    this.headers = options.headers instanceof Headers ? options.headers : new Headers(options.headers)
+	    this.url = options.url || ''
+	    this._initBody(bodyInit)
+	  }
+
+	  Body.call(Response.prototype)
+
+	  Response.prototype.clone = function() {
+	    return new Response(this._bodyInit, {
+	      status: this.status,
+	      statusText: this.statusText,
+	      headers: new Headers(this.headers),
+	      url: this.url
+	    })
+	  }
+
+	  Response.error = function() {
+	    var response = new Response(null, {status: 0, statusText: ''})
+	    response.type = 'error'
+	    return response
+	  }
+
+	  var redirectStatuses = [301, 302, 303, 307, 308]
+
+	  Response.redirect = function(url, status) {
+	    if (redirectStatuses.indexOf(status) === -1) {
+	      throw new RangeError('Invalid status code')
+	    }
+
+	    return new Response(null, {status: status, headers: {location: url}})
+	  }
+
+	  self.Headers = Headers
+	  self.Request = Request
+	  self.Response = Response
+
+	  self.fetch = function(input, init) {
+	    return new Promise(function(resolve, reject) {
+	      var request
+	      if (Request.prototype.isPrototypeOf(input) && !init) {
+	        request = input
+	      } else {
+	        request = new Request(input, init)
+	      }
+
+	      var xhr = new XMLHttpRequest()
+
+	      function responseURL() {
+	        if ('responseURL' in xhr) {
+	          return xhr.responseURL
+	        }
+
+	        // Avoid security warnings on getResponseHeader when not allowed by CORS
+	        if (/^X-Request-URL:/m.test(xhr.getAllResponseHeaders())) {
+	          return xhr.getResponseHeader('X-Request-URL')
+	        }
+
+	        return
+	      }
+
+	      xhr.onload = function() {
+	        var options = {
+	          status: xhr.status,
+	          statusText: xhr.statusText,
+	          headers: headers(xhr),
+	          url: responseURL()
+	        }
+	        var body = 'response' in xhr ? xhr.response : xhr.responseText
+	        resolve(new Response(body, options))
+	      }
+
+	      xhr.onerror = function() {
+	        reject(new TypeError('Network request failed'))
+	      }
+
+	      xhr.ontimeout = function() {
+	        reject(new TypeError('Network request failed'))
+	      }
+
+	      xhr.open(request.method, request.url, true)
+
+	      if (request.credentials === 'include') {
+	        xhr.withCredentials = true
+	      }
+
+	      if ('responseType' in xhr && support.blob) {
+	        xhr.responseType = 'blob'
+	      }
+
+	      request.headers.forEach(function(value, name) {
+	        xhr.setRequestHeader(name, value)
+	      })
+
+	      xhr.send(typeof request._bodyInit === 'undefined' ? null : request._bodyInit)
+	    })
+	  }
+	  self.fetch.polyfill = true
+	})(typeof self !== 'undefined' ? self : this);
+
 
 /***/ }
 /******/ ])

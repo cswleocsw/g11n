@@ -2,42 +2,33 @@
 The g11n library was designed to allow user integrate difference language file into their application.
 
 ## CHANGELOG
+2016-08-29
+update version 2.1.0
+
 2016-08-04
 update version 2.0.1
 
-## TODO
- * XMLHttpRequest asynchronous requests
-
 ## Usage
+
+package.json
+```
+{
+  package: {
+     name: 'g11n',
+     version: '1.0.0',
+     descript: 'This package name is `:name` and version is `:version`'
+  }
+}
+```
+
 ```javascript
-var g11n = new G11N();
+var g11n = new G11N()
 
-var package = {
-    name: 'g11n',
-    version: '1.0.0',
-    descript: 'This package name is `:name` and version is `:version`'
-};
+g11n.imports('package.json')
 
+g11n
 // bind json object
-g11n.bind(package);
-g11n.t('name'); // return g11n
-
-// import json file
-
-// if your website has json's resource files
-// http://domain/locates/en-us.json
-// {
-//   "hello": "hello(en-us)"
-// }
-
-g11n.imports('locates/en-us');
-g11n.t('hello'); // return hello(en-us)
-
-// assign import json content to another namespace
-g11n.imports('locates/zh-cn', 'zh-cn');
-g11n.t('hello'); // return hello(en-us)
-g11n.t('hello', 'zh-cn'); // return hello(zh-cn)
-
+g11n.t('package.name')
 
 ```
 
