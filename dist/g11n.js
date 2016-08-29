@@ -82,6 +82,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var logger = _log4jsFree2.default.getLogger('G11N');
+	logger.setLevel('ERROR');
 
 	function isString(str) {
 	  return typeof str === 'string';
@@ -101,6 +102,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.namespace = options.namespace || 'translation';
 	    this.placeholder = options.placeholder || /\{%([^%]+)%\}/g;
 	    this.storage = {};
+
+	    if (options.debug) {
+	      logger.setLevel('DEBUG');
+	    }
 	  }
 
 	  _createClass(G11N, [{

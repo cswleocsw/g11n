@@ -6,6 +6,7 @@ import get from 'lodash.get'
 import log4js from 'log4js-free'
 
 let logger = log4js.getLogger('G11N')
+logger.setLevel('ERROR')
 
 function isString(str) {
   return typeof str === 'string'
@@ -20,6 +21,10 @@ export default class G11N {
     this.namespace = options.namespace ||'translation'
     this.placeholder = options.placeholder || /\{%([^%]+)%\}/g
     this.storage = {}
+
+    if (options.debug) {
+      logger.setLevel('DEBUG')
+    }
   }
 
   t(query, options = {}) {
