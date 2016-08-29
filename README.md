@@ -3,7 +3,7 @@ The g11n library was designed to allow user integrate difference language file i
 
 ## CHANGELOG
 2016-08-29
-update version 2.1.0
+update version 3.0.1
 
 2016-08-04
 update version 2.0.1
@@ -21,14 +21,20 @@ package.json
 }
 ```
 
+js
 ```javascript
-var g11n = new G11N()
+  var g11n = new G11N()
+  
+  g11n.imports({ files: ['package.json'] }, function() {
+    // g11n.t
+    console.log(g11n.t('package.name'))
 
-g11n.imports('package.json')
+    // g11n.t with replace
+    g11n.t('package.description_1', { replaces: { ':name': 'g11n', ':version': '1.0.0' }))
 
-g11n
-// bind json object
-g11n.t('package.name')
+    // g11n.render with Regular Expression
+    g11n.render('This package is {%name%} and version is {%version%}', { path: 'package' })
+  })
 
 ```
 
