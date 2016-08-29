@@ -13,10 +13,11 @@ update version 2.0.1
 package.json
 ```
 {
-  package: {
-     name: 'g11n',
-     version: '1.0.0',
-     descript: 'This package name is `:name` and version is `:version`'
+  "package": {
+    "name": "g11n",
+    "version": "1.0.0",
+    "description_1": "This package name is `:name` and version is `:version`",
+    "description_2": "This package name is `{%name%}` and version is `{%version%}`"
   }
 }
 ```
