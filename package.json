@@ -4,9 +4,9 @@
   "main": "dist/g11n.min.js",
   "scripts": {
     "build": "npm run clean && npm run build:umd && npm run build:umd:min",
-    "build:dev": "NODE_ENV=production webpack src/G11N.js dist/G11N.js -w",
-    "build:umd": "NODE_ENV=production webpack src/G11N.js dist/G11N.js",
-    "build:umd:min": "NODE_ENV=production webpack src/G11N.js dist/G11N.min.js -p",
+    "build:dev": "NODE_ENV=production webpack src/G11N.js dist/g11n.js -w",
+    "build:umd": "NODE_ENV=production webpack src/G11N.js dist/g11n.js",
+    "build:umd:min": "NODE_ENV=production webpack src/G11N.js dist/g11n.min.js -p",
     "clean": "rimraf dist",
     "demo": "browser-sync start --serveStatic example dist",
     "lint": "eslint src",
