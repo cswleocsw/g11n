@@ -18,7 +18,7 @@ function jsonSuffix(str) {
 
 export default class G11N {
   constructor(options = {}) {
-    this.namespace = options.namespace ||'translation'
+    this.namespace = options.namespace || 'translation'
     this.placeholder = options.placeholder || /\{%([^%]+)%\}/g
     this.storage = {}
 
@@ -55,28 +55,45 @@ export default class G11N {
     let files = options.files || []
     let namespace = options.namespace || this.namespace
 
-    let leng = files.length
+    if (files.length === 0) {
+      throw new Error('import files is empty')
+    }
+
+    files.map((file) => jsonSuffix(file))
+
     let loaded = 0
 
-    if (leng > 0) {
-      Promise.all(files.map((file) => fetch(jsonSuffix(file))))
-        .then((values) => {
-          values.forEach((res) => {
-            if (res.status >= 200 && res.status < 300) {
-              res.json().then((data) => {
-                loaded++
-                this.storage[namespace] = Object.assign({}, this.storage[namespace] || {}, data)
-                if (loaded === leng && callback && typeof callback === 'function') {
-                  callback()
-                }
+    return new Promise((resolve, reject) => {
+      files.forEach((file) => {
+        fetch(file)
+          .then((res) => {
+            if (res.ok) {
+              res.json()
+                .then((data) => {
+                  loaded++
+                  this.storage[namespace] = Object.assign({}, this.storage[namespace] || {}, data)
+                  if (loaded === files.length) {
+                    if (callback && typeof callback === 'function') {
+                      callback()
+                    }
+                    resolve(this)
+                  }
+                })
+                .catch((err) => {
+                  reject(err)
+                })
+            } else {
+              reject({
+                status: res.status,
+                statusText: res.statusText
               })
             }
           })
-        })
-        .catch((err) => {
-          logger.warn(err)
-        })
-    }
+          .catch((err) => {
+            reject(err)
+          })
+      })
+    })
   }
 
   render(template, options = {}) {

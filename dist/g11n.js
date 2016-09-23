@@ -146,28 +146,43 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var files = options.files || [];
 	      var namespace = options.namespace || this.namespace;
 
-	      var leng = files.length;
+	      if (files.length === 0) {
+	        throw new Error('import files is empty');
+	      }
+
+	      files.map(function (file) {
+	        return jsonSuffix(file);
+	      });
+
 	      var loaded = 0;
 
-	      if (leng > 0) {
-	        Promise.all(files.map(function (file) {
-	          return fetch(jsonSuffix(file));
-	        })).then(function (values) {
-	          values.forEach(function (res) {
-	            if (res.status >= 200 && res.status < 300) {
+	      return new Promise(function (resolve, reject) {
+	        files.forEach(function (file) {
+	          fetch(file).then(function (res) {
+	            if (res.ok) {
 	              res.json().then(function (data) {
 	                loaded++;
 	                _this.storage[namespace] = Object.assign({}, _this.storage[namespace] || {}, data);
-	                if (loaded === leng && callback && typeof callback === 'function') {
-	                  callback();
+	                if (loaded === files.length) {
+	                  if (callback && typeof callback === 'function') {
+	                    callback();
+	                  }
+	                  resolve(_this);
 	                }
+	              }).catch(function (err) {
+	                reject(err);
+	              });
+	            } else {
+	              reject({
+	                status: res.status,
+	                statusText: res.statusText
 	              });
 	            }
+	          }).catch(function (err) {
+	            reject(err);
 	          });
-	        }).catch(function (err) {
-	          logger.warn(err);
 	        });
-	      }
+	      });
 	    }
 	  }, {
 	    key: 'render',

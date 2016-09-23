@@ -32,7 +32,7 @@
   // g11n.imoprts
   g11n.imports({ files: ['package.json'] }, () => {
     // g11n.t
-    console.log(g11n.t('package.name'))
+    console.log('callback: ', g11n.t('package.name'))
 
     // g11n.t with replace
     console.log(g11n.t('package.description_1', {
@@ -41,6 +41,8 @@
 
     // g11n.render with Regular Expression
     console.log(g11n.render('This package is {%name%} and version is {%version%}', { path: 'package' }))
+  }).then(() => {
+    console.log('promise: ', g11n.t('package.name'))
   })
 </script>
 </html>
