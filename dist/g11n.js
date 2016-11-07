@@ -150,7 +150,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        throw new Error('import files is empty');
 	      }
 
-	      files.map(function (file) {
+	      files = files.map(function (file) {
 	        return jsonSuffix(file);
 	      });
 

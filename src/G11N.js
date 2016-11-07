@@ -59,7 +59,7 @@ export default class G11N {
       throw new Error('import files is empty')
     }
 
-    files.map((file) => jsonSuffix(file))
+    files = files.map((file) => jsonSuffix(file))
 
     let loaded = 0
 
