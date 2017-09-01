@@ -1,6 +1,6 @@
 {
   "name": "g11n",
-  "version": "3.0.8",
+  "version": "3.0.9",
   "main": "dist/g11n.min.js",
   "scripts": {
     "build": "npm run clean && npm run build:umd && npm run build:umd:min",
