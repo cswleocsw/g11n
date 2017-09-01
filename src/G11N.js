@@ -13,7 +13,13 @@ function isString(str) {
 }
 
 function jsonSuffix(str) {
-  return /^(.)+\.json$/.test(str) ? str : `${str}.json`
+  const regex = /^(.)+\.json(\?.+)$/
+
+  if (regex.test(str)) {
+    return str
+  }
+
+  return `${str}.json`
 }
 
 export default class G11N {
