@@ -89,8 +89,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	function jsonSuffix(str) {
-	  return (/^(.)+\.json$/.test(str) ? str : str + '.json'
-	  );
+	  var regex = /^(.)+\.json(\?.+)$/;
+
+	  if (regex.test(str)) {
+	    return str;
+	  }
+
+	  return str + '.json';
 	}
 
 	var G11N = function () {
