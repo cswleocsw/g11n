@@ -1,36 +1,12 @@
-/**
- * @author cswleocsw <cswleo@gmail.com>
- */
 import 'whatwg-fetch'
 import get from 'lodash.get'
-import log4js from 'log4js-free'
-
-let logger = log4js.getLogger('G11N')
-logger.setLevel('ERROR')
-
-function isString(str) {
-  return typeof str === 'string'
-}
-
-function jsonSuffix(str) {
-  const regex = /^(.)+\.json(\?.+)$/
-
-  if (regex.test(str)) {
-    return str
-  }
-
-  return `${str}.json`
-}
+import { isString, jsonSuffix } from './tool'
 
 export default class G11N {
   constructor(options = {}) {
     this.namespace = options.namespace || 'translation'
     this.placeholder = options.placeholder || /\{%([^%]+)%\}/g
     this.storage = {}
-
-    if (options.debug) {
-      logger.setLevel('DEBUG')
-    }
   }
 
   t(query, options = {}) {
@@ -38,13 +14,12 @@ export default class G11N {
       return ''
     }
 
-    let namespace = options.namespace || this.namespace
+    const namespace = options.namespace || this.namespace
 
     let str = get(this.storage, `${namespace}.${query}`)
 
     if (str === undefined) {
       str = ''
-      logger.warn(`g11n: query ${query} result is undefined, please check your query path or file is correct!`)
     }
 
     // string replace
@@ -59,13 +34,13 @@ export default class G11N {
 
   imports(options = {}, callback) {
     let files = options.files || []
-    let namespace = options.namespace || this.namespace
+    const namespace = options.namespace || this.namespace
 
     if (files.length === 0) {
       throw new Error('import files is empty')
     }
 
-    files = files.map((file) => jsonSuffix(file))
+    files = files.map(file => jsonSuffix(file))
 
     let loaded = 0
 
@@ -76,7 +51,7 @@ export default class G11N {
             if (res.ok) {
               res.json()
                 .then((data) => {
-                  loaded++
+                  loaded += 1
                   this.storage[namespace] = Object.assign({}, this.storage[namespace] || {}, data)
                   if (loaded === files.length) {
                     if (callback && typeof callback === 'function') {
@@ -89,10 +64,7 @@ export default class G11N {
                   reject(err)
                 })
             } else {
-              reject({
-                status: res.status,
-                statusText: res.statusText
-              })
+              reject(new Error(`status: ${res.status} statusText: ${res.statusText}`))
             }
           })
           .catch((err) => {
@@ -103,10 +75,12 @@ export default class G11N {
   }
 
   render(template, options = {}) {
-    let path = options.path || ''
-    let namespace = options.namespace || this.namespace
-    let placeholder = options.placeholder || this.placeholder
-    let data = get(this.storage, `${namespace}.${path}`, {})
+    const path = options.path || ''
+    const namespace = options.namespace || this.namespace
+    const placeholder = options.placeholder || this.placeholder
+    const seach = path ? `${namespace}.${path}` : namespace
+    const data = get(this.storage, seach, {})
+
     return template.replace(placeholder, (m, $1) => get(data, $1, $1))
   }
 }

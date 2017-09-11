@@ -1,22 +1,7 @@
-let webpack = require('webpack')
-let env = process.env.NODE_ENV
+const WebpackConfig = require('webpack-config')
 
-let config = {
-  module: {
-    loaders: [
-      { test: /\.js$/, loaders: ['babel-loader'], exclude: /node_modules/ }
-    ]
-  },
-  output: {
-    library: 'G11N',
-    libraryTarget: 'umd'
-  },
-  plugins: [
-    new webpack.optimize.OccurrenceOrderPlugin(),
-    new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(env)
-    })
-  ]
-}
+WebpackConfig.environment.setAll({
+    env: () => process.env.NODE_ENV || 'development'
+})
 
-module.exports = config
+module.exports = new WebpackConfig.Config().extend('webpack/[env].config.js')
