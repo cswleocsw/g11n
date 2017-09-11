@@ -1,13 +1,6 @@
 # g11n [![Build Status](https://travis-ci.org/cswleocsw/g11n.svg?branch=master)](https://travis-ci.org/cswleocsw/g11n)
 The g11n library was designed to allow user integrate difference language file into their application.
 
-## CHANGELOG
-2016-08-29
-update version 3.0.1
-
-2016-08-04
-update version 2.0.1
-
 ## Usage
 
 package.json
@@ -25,7 +18,7 @@ package.json
 js
 ```javascript
   var g11n = new G11N()
-  
+
   g11n.imports({ files: ['package.json'] }, function() {
     // g11n.t
     console.log(g11n.t('package.name'))
