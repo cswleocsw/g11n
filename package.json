@@ -1,6 +1,6 @@
 {
   "name": "g11n",
-  "version": "3.0.9",
+  "version": "3.1.0",
   "main": "build/g11n.js",
   "scripts": {
     "start": "cross-env NODE_ENV=development babel-node scripts/start.js",
