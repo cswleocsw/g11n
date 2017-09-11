@@ -46,8 +46,8 @@ describe('G11N', () => {
   })
 
   describe('render()', () => {
-    it('should get empty string', () => {
-      expect(g11n.render('{%hello%}!!')).to.be.equal('world!!')
+    it('should render string with placehold type', () => {
+      expect(g11n.render('the {%hello%} is beauty')).to.be.equal('the world is beauty')
     })
   })
 })
